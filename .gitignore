@@ -1,5 +1,7 @@
+__pycache__/
 test.js
 .vscode/
+.session
 .idea
 # Logs
 logs
