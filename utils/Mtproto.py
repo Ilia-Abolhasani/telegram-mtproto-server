@@ -2,6 +2,11 @@ import re
 import json
 from urllib.parse import urlparse, parse_qs
 
+def parse_proxy_link(proxy_link):
+    pass
+    #return server, port, secret
+
+
 def is_valid_mtproto_link(link): # todo
     parsed_url = urlparse(link)
     required_params = ['server', 'port', 'secret']
@@ -20,7 +25,6 @@ def is_valid_mtproto_link(link): # todo
         return False
 
     return True
-
 
 def extract_all_mtproto(message):
     ulrs = []

@@ -1,14 +1,14 @@
-from context import session
-from model.proxy import Proxy
+from dotenv import load_dotenv
+from cron import fetch_new_proxties
+from Context import Context
+from TelegramAPI import TelegramAPI
 
 def main():
-    new_proxy = Proxy(server='proxy.example.com', port=8080, secret='mysecret')
-    session.add(new_proxy)
-    session.commit()
+    load_dotenv()    
+    context = Context()
+    telegramAPI = TelegramAPI()
+    fetch_new_proxties.start(context, telegramAPI)        
 
-    # proxies = session.query(Proxy).all()
-    # for proxy in proxies:
-    #     print(proxy.server, proxy.port, proxy.secret)
 
 if __name__ == "__main__":
     main()

@@ -5,7 +5,7 @@ from .base import Base
 class Report(Base):
     __tablename__ = 'report'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True) 
     agent_id = Column(Integer, ForeignKey('agent.id'), nullable=False)
     proxy_id = Column(Integer, ForeignKey('proxy.id'), nullable=False)
     connected = Column(Boolean, nullable=False)
