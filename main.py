@@ -6,9 +6,9 @@ def main():
     session.add(new_proxy)
     session.commit()
 
-    proxies = session.query(Proxy).all()
-    for proxy in proxies:
-        print(proxy.server, proxy.port, proxy.secret)
+    # proxies = session.query(Proxy).all()
+    # for proxy in proxies:
+    #     print(proxy.server, proxy.port, proxy.secret)
 
 if __name__ == "__main__":
     main()

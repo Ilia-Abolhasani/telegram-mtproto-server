@@ -50,7 +50,6 @@ class TelegramAPI:
         })        
         return result
 
-
     @timeout(download_timeout)  
     def speed_test(self, file_id):
         result = None

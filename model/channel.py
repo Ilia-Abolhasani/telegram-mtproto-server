@@ -5,5 +5,5 @@ class Channel(Base):
     __tablename__ = 'channel'
 
     id = Column(Integer, primary_key=True)
-    username = Column(String(100))
-    last_id = Column(Integer)
+    username = Column(String(128), nullable=False)
+    last_id = Column(Integer, server_default=None, nullable=True)

@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from model.base import Base
 
+
 db_name = os.getenv("database_name")
 db_user = os.getenv("database_user")
 db_pass = os.getenv("database_pass")
