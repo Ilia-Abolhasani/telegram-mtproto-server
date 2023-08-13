@@ -1,5 +1,3 @@
-import re
-import json
 from TelegramAPI import TelegramAPI
 
 from dotenv import load_dotenv
@@ -8,14 +6,6 @@ client = TelegramAPI()
 client.remove_all_proxies()
 
 
-def extract_all_mtproto(message):
-    ulrs = []
-    json_string = json.dumps(message, indent = 4) 
-    urls = re.findall(r'"url": "https://t.me/proxy\?([^"]+)"', json_string)
-    for url in urls:
-        decoded_url = re.sub(r'%([0-9a-fA-F]{2})', lambda m: chr(int(m.group(1), 16)), url)        
-        ulrs.append(decoded_url)                
-    return ulrs
 
 
 

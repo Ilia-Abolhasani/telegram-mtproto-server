@@ -7,26 +7,18 @@ load_dotenv()
 client = TelegramAPI()
 client.remove_all_proxies()
 
-# client.add_proxy(
-#     "crack.income.know.host.question.nod.bookcasestreet.quest",
-#     443,
-#     "7vQ1mpsyX_HR5QhN8OD3U3ttc24uY29t")
-# proxy_id = client.get_proxies()[0].id
-# client.enable_proxy(proxy_id)
+client.add_proxy(
+     "e.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.zeit.yachts.",
+     443,
+     "7gAAAAAAAAAAAAAAAAAAAAB3ZWIuYmFsZS5pcg==")
+proxy_id = client.get_proxies()[0].id
+client.enable_proxy(proxy_id)
 
-channel_id = client.search_public_chat("speed_test_channel")
-result = client.channel_hsitory(channel_id, 100, 0, 0, True)
-print(result.update['total_count'])
-message_id = result.update['messages'][0]["id"]
-result = client.channel_hsitory(channel_id, 100, message_id, 0, True)
-print(result.update['total_count'])
-
-# for message in result.update['messages']:
-#     print(message)
-msg = result.update['messages'][0]
-fileid = msg['content']['document']['document']['id']
-try:
-    client.download_file(fileid, 32)
-except TimeoutError:
-    print("Function took too long to execute and was timed out.")
-client.idle()
+recived_messages, last_message_id = client.channel_hsitory("speed_test_channel", 100, None)
+fileid = recived_messages[1]['content']['document']['document']['id']
+print(client.speed_test(fileid))
+# try:
+#     client.download_file(fileid, 32)
+# except TimeoutError:
+#     print("Function took too long to execute and was timed out.")
+# client.idle()

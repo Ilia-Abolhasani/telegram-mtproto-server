@@ -1,3 +1,7 @@
 pip install python-dotenv
 pip install python-telegram # todo add this to our code
 pip install timeout-decorator
+pip install sqlalchemy
+pip install schedule
+pip install mysql-connector-python
+
