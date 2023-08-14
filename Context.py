@@ -40,12 +40,13 @@ class Context:
             Proxy.secret == secret).first()
         return proxy
         
-    def add_proxy(self, server, port, secret):
+    def add_proxy(self, server, port, secret, commit):
         proxy = self.get_proxy(server, port, secret)
         if(not proxy):
             new_proxy = Proxy(server=server, port=port, secret=secret)
             self.session.add(new_proxy)
-            self.session.commit()
+            if(commit):
+                self.session.commit()
     # endregion 
 
     # region agent

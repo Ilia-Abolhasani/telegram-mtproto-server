@@ -2,9 +2,8 @@ from timeout_decorator import timeout
 import time
 import telegram.client as client
 import os
-import sys
-sys.path.append("./utils/")
-from DotDict import DotDict
+from .DotDict import DotDict
+
 download_timeout = int(os.getenv("download_timeout"))
 
 class TelegramAPI:

@@ -3,12 +3,16 @@ import json
 from urllib.parse import urlparse, parse_qs
 
 def parse_proxy_link(proxy_link):
-    pass
-    #return server, port, secret
+    parsed_url = urlparse(proxy_link)    
+    query_params = parse_qs(parsed_url.query)
+    server = query_params.get('server', [''])[0]
+    port = int(query_params.get('port', ['0'])[0])
+    secret = query_params.get('secret', [''])[0]
+    return server, port, secret
 
 
-def is_valid_mtproto_link(link): # todo
-    parsed_url = urlparse(link)
+def is_valid_mtproto_link(proxy_link): 
+    parsed_url = urlparse(proxy_link)
     required_params = ['server', 'port', 'secret']
 
     if parsed_url.scheme != 'https' or parsed_url.netloc != 't.me' or parsed_url.path != '/proxy':
@@ -26,11 +30,13 @@ def is_valid_mtproto_link(link): # todo
 
     return True
 
+
 def extract_all_mtproto(message):
     ulrs = []
-    json_string = json.dumps(message, indent = 4) 
+    json_string = json.dumps(message, indent = 4)
     urls = re.findall(r'"url": "https://t.me/proxy\?([^"]+)"', json_string)
     for url in urls:
-        decoded_url = re.sub(r'%([0-9a-fA-F]{2})', lambda m: chr(int(m.group(1), 16)), url)        
-        ulrs.append(decoded_url)                
+        decoded_url = re.sub(r'%([0-9a-fA-F]{2})', lambda m: chr(int(m.group(1), 16)), url)
+        if(is_valid_mtproto_link(decoded_url)):
+            ulrs.append(decoded_url)
     return ulrs

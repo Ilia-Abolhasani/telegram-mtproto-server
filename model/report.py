@@ -7,8 +7,7 @@ class Report(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True) 
     agent_id = Column(Integer, ForeignKey('agent.id'), nullable=False)
-    proxy_id = Column(Integer, ForeignKey('proxy.id'), nullable=False)
-    connected = Column(Boolean, nullable=False)
+    proxy_id = Column(Integer, ForeignKey('proxy.id'), nullable=False)    
     ping = Column(Integer, server_default=None, nullable=True)
     download_speed = Column(Integer, server_default=None, nullable=True)
     upload_speed = Column(Integer, server_default=None, nullable=True)
