@@ -7,5 +7,6 @@ CHAT='@myproxy786'
 bot = Bot(API_KEY)
 
 # res = bot.send_message(CHAT, "Example Text FROM BOT!")
-res = bot.edit_message_text("Example Text EDIT FROM BOT!", CHAT, 25)
-print(res.message_id)
+# res = bot.edit_message_text("Example Text EDIT FROM BOT!", CHAT, 25)
+bot.delete_message(CHAT,25)
+# print(res.message_id)
