@@ -4,4 +4,4 @@ pip install timeout-decorator
 pip install sqlalchemy
 pip install schedule
 pip install mysql-connector-python
-
+pip install -U pytgbot==4.9.1
