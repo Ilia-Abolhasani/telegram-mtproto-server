@@ -6,6 +6,8 @@ from app.cron.cron_manager import setup_cron_jobs
 from app.Context import Context
 from app.middleware.request_handler import request_handler_middleware
 from app.route import route_bp  # Import the blueprint
+from app.util.TelegramAPI import TelegramAPI
+from app.util.BotAPI import BotAPI
 
 load_dotenv()
 
@@ -22,9 +24,6 @@ sys.excepthook = custom_excepthook
 
 app = Flask(__name__)
 
-# Initialize your context
-context = Context()
-
 # Register your route blueprint
 app.register_blueprint(route_bp)
 
@@ -33,3 +32,10 @@ app.register_blueprint(route_bp)
 
 # Register request handler middleware
 app.before_request(request_handler_middleware)
+
+# Initialize
+context = Context()
+telegram_api = TelegramAPI()
+bot_api = BotAPI()
+
+setup_cron_jobs(context, telegram_api, bot_api)

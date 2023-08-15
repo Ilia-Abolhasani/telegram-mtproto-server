@@ -6,3 +6,4 @@ pip install schedule
 pip install mysql-connector-python
 pip install -U pytgbot==4.9.1
 pip install Flask
+pip install apscheduler
