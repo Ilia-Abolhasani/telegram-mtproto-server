@@ -2,7 +2,7 @@ import sys
 import logging
 from dotenv import load_dotenv
 from flask import Flask
-from app.cron.cron_manager import setup_cron_jobs
+from app.cron.manager import start_jobs
 from app.Context import Context
 from app.middleware.request_handler import request_handler_middleware
 from app.route import route_bp  # Import the blueprint
@@ -27,9 +27,6 @@ app = Flask(__name__)
 # Register your route blueprint
 app.register_blueprint(route_bp)
 
-# Set up cron jobs
-# setup_cron_jobs()
-
 # Register request handler middleware
 app.before_request(request_handler_middleware)
 
@@ -38,4 +35,4 @@ context = Context()
 telegram_api = TelegramAPI()
 bot_api = BotAPI()
 
-setup_cron_jobs(context, telegram_api, bot_api)
+start_jobs(context, telegram_api, bot_api)
