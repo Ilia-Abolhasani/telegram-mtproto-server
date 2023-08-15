@@ -26,5 +26,3 @@ class BotAPI:
         result = self.bot.pin_chat_message(
             self.chat, message_id, disable_notification)
         return result
-
-#
