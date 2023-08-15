@@ -1,6 +1,6 @@
 import time
 import schedule
-from utils.Mtproto import extract_all_mtproto, parse_proxy_link
+from app.util.Mtproto import extract_all_mtproto, parse_proxy_link
 
 
 async def job(context, telegramAPI):

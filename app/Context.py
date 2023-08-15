@@ -4,12 +4,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # models
-from model.base import Base
-from model.agent import Agent
-from model.channel import Channel
-from model.isp import ISP
-from model.proxy import Proxy
-from model.report import Report
+from app.model.base import Base
+from app.model.agent import Agent
+from app.model.channel import Channel
+from app.model.isp import ISP
+from app.model.proxy import Proxy
+from app.model.report import Report
 
 
 class Context:
@@ -30,7 +30,7 @@ class Context:
     def get_all_channel(self):
         return self.session.query(Channel).all()
 
-    # endregion 
+    # endregion
 
     # region proxy
     def get_proxy(self, server, port, secret):
@@ -39,23 +39,21 @@ class Context:
             Proxy.port == port,
             Proxy.secret == secret).first()
         return proxy
-        
+
     def add_proxy(self, server, port, secret, commit):
         proxy = self.get_proxy(server, port, secret)
-        if(not proxy):
+        if (not proxy):
             new_proxy = Proxy(server=server, port=port, secret=secret)
             self.session.add(new_proxy)
-            if(commit):
+            if (commit):
                 self.session.commit()
-    # endregion 
+    # endregion
 
     # region agent
-    # endregion 
+    # endregion
 
     # region isp
-    # endregion 
+    # endregion
 
     # region report
-    # endregion 
-
-    
+    # endregion
