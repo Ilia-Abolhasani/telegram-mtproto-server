@@ -10,4 +10,3 @@ def get_channel():
     channel = controller.get_all()
     return jsonify(channel)
 
-# More routes and handlers can be defined similarly

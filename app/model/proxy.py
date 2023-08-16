@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, UniqueConstraint
+from sqlalchemy import Column, Boolean, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 from .base import Base
 
@@ -10,6 +10,7 @@ class Proxy(Base):
     port = Column(Integer, nullable=False)
     secret = Column(String(1024), nullable=False)
     ip = Column(Integer, nullable=True)
+    connect = Column(Boolean, nullable=True)
 
     # foreign key 1 to many
     reports = relationship('Report', back_populates='proxy')

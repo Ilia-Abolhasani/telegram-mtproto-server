@@ -1,16 +1,38 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-import app.cron.job_fetch_new_proxies as job_fetch_new_proxies
+import app.cron as jobs
 
 
 def start_jobs(context, telegram_api, bot_api):
-    scheduler = BackgroundScheduler(daemon=True)
-    job_fetch_new_proxies.start(context, telegram_api)
-    # fetch_new_proxies
-    # scheduler.add_job(
-    #     lambda: job_fetch_new_proxies.start(context, telegram_api),
-    #     trigger=CronTrigger.from_crontab('*/10 * * * *')
-    # )
-    #
+    scheduler = BackgroundScheduler(daemon=True)    
+    ## job add message to channel
+    scheduler.add_job(
+        lambda: jobs.job_channel_add_message.start(context, bot_api),
+        trigger=CronTrigger.from_crontab('*/10 * * * *')
+    )
+
+    ## job edit last message of channel
+    scheduler.add_job(
+        lambda: jobs.job_channel_add_message.start(context, bot_api),
+        trigger=CronTrigger.from_crontab('*/10 * * * *')
+    )
+
+    ## job test connection of proxy base on reports
+    scheduler.add_job(
+        lambda: jobs.job_connection_analize.start(context),
+        trigger=CronTrigger.from_crontab('*/10 * * * *')
+    )
+
+    ## job proxy ranking base on report
+    scheduler.add_job(
+        lambda: jobs.job_proxy_ranking.start(context),
+        trigger=CronTrigger.from_crontab('*/10 * * * *')
+    )
+
+    ## job fetch new proxies from other proxy chaneels
+    scheduler.add_job(
+        lambda: jobs.job_fetch_new_proxies.start(context, telegram_api),
+        trigger=CronTrigger.from_crontab('*/10 * * * *')
+    )
 
     scheduler.start()

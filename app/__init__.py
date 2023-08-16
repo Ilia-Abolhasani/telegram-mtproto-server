@@ -37,4 +37,4 @@ telegram_api = TelegramAPI()
 telegram_api.remove_all_proxies()
 bot_api = BotAPI(os.getenv("bot_chat_id"))
 
-start_jobs(context, telegram_api, bot_api)
+# start_jobs(context, telegram_api, bot_api)
