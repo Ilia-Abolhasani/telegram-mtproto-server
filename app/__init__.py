@@ -1,3 +1,4 @@
+import os
 import sys
 import logging
 from dotenv import load_dotenv
@@ -20,7 +21,7 @@ def custom_excepthook(exctype, value, traceback):
     logger.error("Uncaught error.", exc_info=(exctype, value, traceback))
 
 
-sys.excepthook = custom_excepthook
+# sys.excepthook = custom_excepthook
 
 app = Flask(__name__)
 
@@ -33,6 +34,7 @@ app.before_request(request_handler_middleware)
 # Initialize
 context = Context()
 telegram_api = TelegramAPI()
-bot_api = BotAPI()
+telegram_api.remove_all_proxies()
+bot_api = BotAPI(os.getenv("bot_chat_id"))
 
 start_jobs(context, telegram_api, bot_api)

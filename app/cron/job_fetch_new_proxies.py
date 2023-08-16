@@ -1,18 +1,18 @@
 from app.util.Mtproto import extract_all_mtproto, parse_proxy_link
 
 
-async def start(context, telegram_api):
+def start(context, telegram_api):
     channels = context.get_all_channel()
     for channel in channels:
         try:
             messages, last_message_id = telegram_api.channel_hsitory(
-                "speed_test_channel", 1000, channel.last_id)
+                channel.username, 1000, channel.last_id)
             proxy_linkes = []
             # get messages
             for message in messages:
                 for link in extract_all_mtproto(message):
                     proxy_linkes.append(link)
-            proxy_linkes = link(set(proxy_linkes))
+            proxy_linkes = list(set(proxy_linkes))
             for link in proxy_linkes:
                 server, port, secret = parse_proxy_link(link)
                 context.add_proxy(server, port, secret, False)
