@@ -5,11 +5,9 @@ blueprint = Blueprint('agent', __name__)
 controller = AgentController()
 
 
-@blueprint.route('/config')
+@blueprint.route('/')
 def get_agents():
-    config = {
-        "bach_size": 32,
-        "time_out": 30
-    }
-    return jsonify(config)
+    agent_id = 1
+    result = controller.get_agent(agent_id)
+    return jsonify(result)
 

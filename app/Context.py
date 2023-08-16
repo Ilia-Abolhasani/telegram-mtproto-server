@@ -10,7 +10,7 @@ from app.model.channel import Channel
 from app.model.isp import ISP
 from app.model.proxy import Proxy
 from app.model.report import Report
-
+from app.model.setting import Setting
 
 class Context:
     def __init__(self):
@@ -47,9 +47,20 @@ class Context:
             self.session.add(new_proxy)
             if (commit):
                 self.session.commit()
+    
+    def get_proxy_ping(self, agent_id, batch):
+        return self.session.query(Proxy).limit(batch).all()
+    
+    def get_proxy_speed_tests(self, agent_id, batch):
+        return self.session.query(Proxy).limit(batch).all()
+
     # endregion
 
     # region agent
+    def get_agent(self, agent_id):
+        agent = self.session.query(Agent).filter(
+            Agent.id == agent_id).first()
+        return agent
     # endregion
 
     # region isp

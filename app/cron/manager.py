@@ -32,7 +32,7 @@ def start_jobs(context, telegram_api, bot_api):
     ## job fetch new proxies from other proxy chaneels
     scheduler.add_job(
         lambda: jobs.job_fetch_new_proxies.start(context, telegram_api),
-        trigger=CronTrigger.from_crontab('*/10 * * * *')
+        trigger=CronTrigger.from_crontab('*/15 * * * *')
     )
 
     scheduler.start()
