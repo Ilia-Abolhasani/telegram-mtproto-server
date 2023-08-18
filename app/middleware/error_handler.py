@@ -1,3 +1,4 @@
+import traceback
 from flask import Flask
 from flask import jsonify
 
@@ -19,9 +20,10 @@ def _not_found_error(error):
 
 
 def _internal_error(error):
+    traceback.print_exc()
     return jsonify({"error": "Internal server error"}), 500
 
 
 def _handle_global_exception(error):
-    # todo email the error
+    traceback.print_exc()
     return jsonify({"error": "An error occurred"}), 500

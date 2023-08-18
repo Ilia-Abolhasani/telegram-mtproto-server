@@ -1,24 +1,45 @@
+from app.util.DotDict import DotDict
 from timeout_decorator import timeout
 import time
 import telegram.client as client
+from app.config.config import Config
 import os
-from .DotDict import DotDict
-
-download_timeout = int(os.getenv("download_timeout"))
 
 
-class TelegramAPI:
-    def __init__(self):
-        api_id = int(os.getenv("telegram_app_id"))
-        api_hash = os.getenv("telegram_app_hash")
-        phone = os.getenv("telegram_phone")
-        self.tg = client.Telegram(
-            api_id=api_id,
-            api_hash=api_hash,
-            phone=phone,
-            database_encryption_key='changekey123',
-            files_directory='../td-server/'
-        )
+class Telegram:
+    def __init__(
+            self,
+            api_id,
+            api_hash,
+            phone,
+            database_encryption_key,
+            tdlib_directory,
+            proxy_server=None,
+            proxy_port=None,
+            proxy_secret=None
+    ):
+        if (proxy_server):
+            self.tg = client.Telegram(
+                api_id=api_id,
+                api_hash=api_hash,
+                phone=phone,
+                database_encryption_key=database_encryption_key,
+                files_directory=tdlib_directory,
+                proxy_server=proxy_server,
+                proxy_port=proxy_port,
+                proxy_type={
+                    '@type': 'proxyTypeMtproto',
+                    'secret': proxy_secret
+                }
+            )
+        else:
+            self.tg = client.Telegram(
+                api_id=api_id,
+                api_hash=api_hash,
+                phone=phone,
+                database_encryption_key=database_encryption_key,
+                files_directory=tdlib_directory,
+            )
         self.tg.login()
 
     def __del__(self):
@@ -50,7 +71,7 @@ class TelegramAPI:
         })
         return result
 
-    @timeout(download_timeout)
+    @timeout(Config.download_timeout)
     def speed_test(self, file_id):
         result = None
         start_time = time.time()
@@ -91,7 +112,7 @@ class TelegramAPI:
         })
 
     def ping_proxy(self, proxy_id):
-        return self._call("pingProxy'", {
+        return self._call("pingProxy", {
             'proxy_id': proxy_id
         })
 
@@ -113,6 +134,12 @@ class TelegramAPI:
             'username': username
         })
         return result.update['id']
+
+    def get_message(self, chat_id, message_id):
+        return self._call("getMessage", {
+            'chat_id': chat_id,
+            'message_id': message_id
+        })
 
     def get_chat_history(self, chat_id, limit, from_message_id, offset, only_local):
         result = self._call("getChatHistory", {

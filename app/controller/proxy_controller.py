@@ -11,12 +11,12 @@ class ProxyController:
         result = []
         for proxy in proxies:
             result.append(proxy.to_json())
-        return result
-            
+        return {"result": result}
+
     def get_proxies_speed_test(self, agent_id):
         batch = 64
         proxies = self.context.get_proxy_speed_tests(agent_id, batch)
         result = []
         for proxy in proxies:
             result.append(proxy.to_json())
-        return result
+        return {"result": result}

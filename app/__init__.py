@@ -1,16 +1,14 @@
-import os
-import sys
 import logging
 from dotenv import load_dotenv
 from flask import Flask
 from app.cron.manager import start_jobs
 from app.Context import Context
 from app.middleware.request_handler import request_handler_middleware
-from app.route import route_bp  # Import the blueprint
-from app.util.TelegramAPI import TelegramAPI
+from app.route import route_bp
+from app.util.Telegram import Telegram
 from app.util.BotAPI import BotAPI
+from app.config.config import Config
 
-load_dotenv()
 
 logging.basicConfig(level=logging.ERROR,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -24,17 +22,19 @@ def custom_excepthook(exctype, value, traceback):
 # sys.excepthook = custom_excepthook
 
 app = Flask(__name__)
-
-# Register your route blueprint
 app.register_blueprint(route_bp)
-
-# Register request handler middleware
 app.before_request(request_handler_middleware)
 
 # Initialize
 context = Context()
-telegram_api = TelegramAPI()
+telegram_api = Telegram(
+    Config.telegram_app_id,
+    Config.telegram_app_hash,
+    Config.telegram_phone,
+    Config.database_encryption_key,
+    Config.tdlib_directory,
+)
 telegram_api.remove_all_proxies()
-bot_api = BotAPI(os.getenv("bot_chat_id"))
+bot_api = BotAPI(Config.bot_chat_id)
 
 start_jobs(context, telegram_api, bot_api)

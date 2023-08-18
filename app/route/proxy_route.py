@@ -6,18 +6,14 @@ controller = ProxyController()
 
 
 @blueprint.route('/speed_test', methods=['GET'])
-def get_speed_test():
-    agent_id = 1
+def get_speed_test(agent_id):
     result = controller.get_proxies_speed_test(agent_id)
-    return jsonify(result)
+    result = jsonify(result)
+    return result, 200
+
 
 @blueprint.route('/ping', methods=['GET'])
-def get_ping():
-    agent_id = 1
+def get_ping(agent_id):
     result = controller.get_proxies_ping(agent_id)
-    return jsonify(result)
-
-
-@blueprint.route('/', methods=['GET'])
-def home():
-    return "This is the home route"
+    result = jsonify(result)
+    return result, 200

@@ -1,7 +1,11 @@
-from flask import request, g as data
+from flask import abort, request, jsonify
 from app.Context import Context
 
 
 def request_handler_middleware():
-    data.context = Context()
-    print("Middleware: Request received from:", request.remote_addr)
+    if (request.view_args):
+        agent_id = request.view_args.get('agent_id')
+        if agent_id != 1:
+            response = jsonify({"error": "Access denied."})
+            response.status_code = 403
+            return response
