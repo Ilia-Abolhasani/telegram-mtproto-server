@@ -33,8 +33,11 @@ telegram_api = Telegram(
     Config.telegram_phone,
     Config.database_encryption_key,
     Config.tdlib_directory,
+    "212.118.37.178",
+    9443,
+    "ee4416004416004400441604416000441663646e2e79656b74616e65742e636f6d646c2e676f6f676c652e636f6d666172616B61762E636F6D160301020001000100000000000000000000000000000000"
 )
-telegram_api.remove_all_proxies()
+# telegram_api.remove_all_proxies()
 bot_api = BotAPI(Config.bot_chat_id)
 
 start_jobs(context, telegram_api, bot_api)

@@ -4,7 +4,8 @@ import app.cron as jobs
 
 
 def start_jobs(context, telegram_api, bot_api):
-    scheduler = BackgroundScheduler(daemon=False)
+    scheduler = BackgroundScheduler(
+        {'apscheduler.job_defaults.max_instances': 5})
     # job add message to channel
     scheduler.add_job(
         lambda: jobs.job_channel_add_message.start(context, bot_api),

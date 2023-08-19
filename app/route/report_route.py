@@ -7,8 +7,7 @@ controller = ReportController()
 
 
 @blueprint.route('/', methods=['POST'])
-def post_reports():
-    agent_id = 1
+def post_reports(agent_id):
     data = request.data
     decoded_data = data.decode('utf-8')
     json_object = json.loads(decoded_data)

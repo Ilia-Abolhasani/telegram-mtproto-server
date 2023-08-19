@@ -50,11 +50,11 @@ class Context:
             if (commit):
                 self.session.commit()
 
-    def get_proxy_ping(self, agent_id, batch):
-        return self.session.query(Proxy).limit(batch).all()
+    def get_proxy_ping(self, agent_id):
+        return self.session.query(Proxy).all()
 
-    def get_proxy_speed_tests(self, agent_id, batch):
-        return self.session.query(Proxy).limit(batch).all()
+    def get_proxy_speed_tests(self, agent_id):
+        return self.session.query(Proxy).all()
 
     # endregion
 

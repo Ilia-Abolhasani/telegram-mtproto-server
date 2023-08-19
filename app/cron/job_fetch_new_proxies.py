@@ -6,7 +6,7 @@ def start(context, telegram_api):
     for channel in channels:
         try:
             messages, last_message_id = telegram_api.channel_hsitory(
-                channel.username, 100, channel.last_id)
+                channel.username, 1000, channel.last_id)
             proxy_linkes = []
             # get messages
             for message in messages:
