@@ -1,2 +1,2 @@
 def start(context):
-    pass
+    context.proxies_connection_update()

@@ -3,6 +3,9 @@ import mysql.connector
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.util.DotDict import DotDict
+from sqlalchemy import update
+from sqlalchemy.sql import case
+
 
 # models
 from app.model.base import Base
@@ -55,6 +58,25 @@ class Context:
 
     def get_proxy_speed_tests(self, agent_id):
         return self.session.query(Proxy).all()
+
+    def proxies_connection_update(self,):
+        subquery = self.session.query(
+            Report.proxy_id,
+            case([(Report.ping == -1, 1)], else_=0).label('timeouts'),
+            case([(Report.ping != -1, 1)], else_=0).label('successful_pings')
+        ).group_by(Report.proxy_id).subquery()
+        # Update query
+        update_query = update(Proxy).join(
+            subquery, Proxy.id == subquery.c.proxy_id
+        ).values(
+            connect=case(
+                [(subquery.c.timeouts > 5, False)],
+                [(subquery.c.successful_pings > 5, True)],
+                else_=Proxy.connect
+            )
+        )
+        self.session.execute(update_query)
+        self.session.commit()
 
     # endregion
 
