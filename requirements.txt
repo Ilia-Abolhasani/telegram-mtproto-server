@@ -1,9 +1,9 @@
-pip install python-dotenv
-pip install python-telegram # todo add this to our code
-pip install timeout-decorator
-pip install sqlalchemy
-pip install schedule
-pip install mysql-connector-python
-pip install -U pytgbot==4.9.1
-pip install Flask
-pip install apscheduler
+python-dotenv
+python-telegram # todo add this to our code
+timeout-decorator
+sqlalchemy
+schedule
+mysql-connector-python
+pytgbot==4.9.1
+Flask
+apscheduler
