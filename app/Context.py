@@ -1,10 +1,11 @@
 import os
 import mysql.connector
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text, func
 from sqlalchemy.orm import sessionmaker
 from app.util.DotDict import DotDict
 from sqlalchemy import update
 from sqlalchemy.sql import case
+from sqlalchemy.orm import aliased
 
 
 # models
@@ -19,6 +20,11 @@ from app.model.setting import Setting
 
 class Context:
     def __init__(self):
+        # config
+        self.max_report = 10
+        self.max_timeouts = 5
+        self.successful_pings = 5
+        #
         db_name = os.getenv("database_name")
         db_user = os.getenv("database_user")
         db_pass = os.getenv("database_pass")
@@ -30,6 +36,10 @@ class Context:
         # Create a session factory
         Session = sessionmaker(bind=engine)
         self.session = Session()
+
+    def _execute_custom_query(self, query):
+        self.session.execute(text(query))
+        self.session.commit()
 
     # region channel
     def get_all_channel(self):
@@ -59,28 +69,30 @@ class Context:
     def get_proxy_speed_tests(self, agent_id):
         return self.session.query(Proxy).all()
 
-    def proxies_connection_update(self,):
-        subquery = self.session.query(
-            Report.proxy_id,
-            case([(Report.ping == -1, 1)], else_=0).label('timeouts'),
-            case([(Report.ping != -1, 1)], else_=0).label('successful_pings')
-        ).group_by(Report.proxy_id).subquery()
-        # Update query
-        update_query = update(Proxy).join(
-            subquery, Proxy.id == subquery.c.proxy_id
-        ).values(
-            connect=case(
-                [(subquery.c.timeouts > 5, False)],
-                [(subquery.c.successful_pings > 5, True)],
-                else_=Proxy.connect
-            )
+    def proxies_connection_update(self):
+        self._execute_custom_query(
+            f"""
+                UPDATE proxy
+                JOIN (
+                    SELECT
+                        report.proxy_id as proxy_id,
+                        CASE WHEN report.ping = -1 THEN 1 ELSE 0 END AS timeouts,
+                        CASE WHEN report.ping != -1 THEN 1 ELSE 0 END AS successful_pings
+                    FROM report
+                    GROUP BY report.proxy_id
+                ) AS subquery ON proxy.id = subquery.proxy_id
+                SET proxy.connect = CASE
+                    WHEN subquery.timeouts >= {self.max_timeouts} THEN 0
+                    WHEN subquery.successful_pings >= {self.successful_pings} THEN 1
+                    ELSE NULL
+                END;
+            """
         )
-        self.session.execute(update_query)
-        self.session.commit()
 
     # endregion
 
     # region agent
+
     def get_agent(self, agent_id):
         agent = self.session.query(Agent).filter(
             Agent.id == agent_id).first()
@@ -91,17 +103,42 @@ class Context:
     # endregion
 
     # region report
+    def get_report_count(self, proxy_id):
+        return self.session.query(func.count(Report.id)).filter_by(
+            proxy_id=proxy_id
+        ).scalar()
+
+    def add_report(self, agent_id, proxy_id, ping, download_speed, upload_speed, commit=True):
+        new_report = Report(
+            agent_id=agent_id,
+            proxy_id=proxy_id,
+            ping=ping,
+            download_speed=download_speed,
+            upload_speed=upload_speed,
+        )
+        self.session.add(new_report)
+        count = self.get_report_count(proxy_id)
+        if (count >= self.max_report):
+            for _ in range(self.max_report, count):
+                oldest_report = self.session.query(Report).filter_by(
+                    agent_id=agent_id,
+                    proxy_id=proxy_id
+                ).order_by(Report.updated_at).first()
+                self.session.delete(oldest_report)
+        if (commit):
+            self.session.commit()
+
     def add_reports(self, agent_id, reports):
         for report in reports:
             report = DotDict(report)
-            new_report = Report(
-                agent_id=agent_id,
-                proxy_id=report.proxy_id,
-                ping=report.ping,
-                download_speed=report.download_speed,
-                upload_speed=report.upload_speed,
+            self.add_report(
+                agent_id,
+                report.proxy_id,
+                report.ping,
+                report.download_speed,
+                report.upload_speed,
+                False
             )
-            self.session.add(new_report)
         self.session.commit()
 
     # endregion
