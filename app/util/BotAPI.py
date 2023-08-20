@@ -10,12 +10,13 @@ class BotAPI:
         self.bot = Bot(bot_api_key)
         self.chat = chat
 
-    def send_message(self, text):
-        result = self.bot.send_message(self.chat, text)
+    def send_message(self, text, parse_mode="HTML"):
+        result = self.bot.send_message(self.chat, text, parse_mode)
         return result
 
-    def edit_message_text(self, text, message_id):
-        result = self.bot.edit_message_text(text, self.chat, message_id)
+    def edit_message_text(self, text, message_id, parse_mode="HTML"):
+        result = self.bot.edit_message_text(
+            text=text, chat_id=self.chat, message_id=message_id, parse_mode=parse_mode)
         return result
 
     def delete_message(self, message_id):

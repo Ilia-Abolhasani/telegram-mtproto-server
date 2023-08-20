@@ -1,6 +1,7 @@
 import os
+import random
 import mysql.connector
-from sqlalchemy import create_engine, text, func
+from sqlalchemy import create_engine, text, func, or_
 from sqlalchemy.orm import sessionmaker
 from app.util.DotDict import DotDict
 from sqlalchemy import update
@@ -24,6 +25,7 @@ class Context:
         self.max_report = 10
         self.max_timeouts = 5
         self.successful_pings = 5
+        self.chance_to_check_disconnected = 0.05
         #
         db_name = os.getenv("database_name")
         db_user = os.getenv("database_user")
@@ -48,6 +50,11 @@ class Context:
     # endregion
 
     # region proxy
+    def get_top_proxies(self):
+        return self.session.query(Proxy).filter(
+            Proxy.connect == 1
+        ).limit(20).all()
+
     def get_proxy(self, server, port, secret):
         proxy = self.session.query(Proxy).filter(
             Proxy.server == server,
@@ -64,10 +71,20 @@ class Context:
                 self.session.commit()
 
     def get_proxy_ping(self, agent_id):
-        return self.session.query(Proxy).all()
+        random_float = random.random()
+        if (random_float <= self.chance_to_check_disconnected):
+            return self.session.query(Proxy).filter(
+                Proxy.connect == 0
+            ).all()
+        else:
+            return self.session.query(Proxy).filter(
+                or_(Proxy.connect.is_(None), Proxy.connect == 1)
+            ).all()
 
     def get_proxy_speed_tests(self, agent_id):
-        return self.session.query(Proxy).all()
+        return self.session.query(Proxy).filter(
+            Proxy.connect == 1
+        ).all()
 
     def proxies_connection_update(self):
         self._execute_custom_query(
@@ -141,4 +158,19 @@ class Context:
             )
         self.session.commit()
 
+    # endregion
+
+    # region setting
+    def get_setting(self, key):
+        setting = self.session.query(Setting).filter_by(key=key).first()
+        return setting
+
+    def add_or_update_setting(self, key, value):
+        setting = self.session.query(Setting).filter_by(key=key).first()
+        if setting:
+            setting.value = value
+        else:
+            new_setting = Setting(key=key, value=value)
+            self.session.add(new_setting)
+        self.session.commit()
     # endregion

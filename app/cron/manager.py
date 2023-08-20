@@ -9,24 +9,18 @@ def start_jobs(context, telegram_api, bot_api):
     # job add message to channel
     scheduler.add_job(
         lambda: jobs.job_channel_add_message.start(context, bot_api),
-        trigger=CronTrigger.from_crontab('*/10 * * * *')
+        trigger=CronTrigger.from_crontab('*/3 * * * *')
     )
 
     # job edit last message of channel
     scheduler.add_job(
-        lambda: jobs.job_channel_add_message.start(context, bot_api),
-        trigger=CronTrigger.from_crontab('*/10 * * * *')
+        lambda: jobs.job_channel_edit_message.start(context, bot_api),
+        trigger=CronTrigger.from_crontab('* * * * *')
     )
 
     # job test connection of proxy base on reports
     scheduler.add_job(
         lambda: jobs.job_connection_analize.start(context),
-        trigger=CronTrigger.from_crontab('*/10 * * * *')
-    )
-
-    # job proxy ranking base on report
-    scheduler.add_job(
-        lambda: jobs.job_proxy_ranking.start(context),
         trigger=CronTrigger.from_crontab('*/10 * * * *')
     )
 
