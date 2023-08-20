@@ -10,8 +10,8 @@ steps:
 - script: |
     git remote add github https://github.com/Ilia-Abolhasani/telegram-mtproto-server.git
     git fetch github
-    git checkout -B github-master github/master
-    git merge master
-    git push origin github-master:master
+    git checkout -B github-main github/main
+    git merge main
+    git push origin github-main:main
   displayName: 'Sync with GitHub'
 
