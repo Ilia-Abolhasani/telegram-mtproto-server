@@ -1,0 +1,17 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: |
+    git remote add github https://github.com/Ilia-Abolhasani/telegram-mtproto-server.git
+    git fetch github
+    git checkout -B github-master github/master
+    git merge master
+    git push origin github-master:master
+  displayName: 'Sync with GitHub'
+
