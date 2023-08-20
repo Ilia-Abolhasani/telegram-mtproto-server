@@ -1,3 +1,4 @@
+import sys
 import logging
 from dotenv import load_dotenv
 from flask import Flask
@@ -9,6 +10,15 @@ from app.util.Telegram import Telegram
 from app.util.BotAPI import BotAPI
 from app.config.config import Config
 
+def setup_logging(level=logging.INFO):
+    root = logging.getLogger()
+    root.setLevel(level)
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s')
+    ch.setFormatter(formatter)
+    root.addHandler(ch)
+setup_logging(level=logging.INFO)
 
 logging.basicConfig(level=logging.ERROR,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
