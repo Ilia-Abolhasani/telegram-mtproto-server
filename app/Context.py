@@ -24,7 +24,6 @@ class Context:
         self.max_report = 10
         self.max_timeouts = 5
         self.successful_pings = 5
-        self.chance_to_check_disconnected = 0.05
         #
         db_name = os.getenv("database_name")
         db_user = os.getenv("database_user")
@@ -44,7 +43,7 @@ class Context:
     def get_top_proxies(self, limit):
         return self.session.query(Proxy).filter(
             Proxy.connect == 1
-        ).limit(20).all()
+        ).limit(limit).all()
 
     def get_proxy(self, server, port, secret):
         proxy = self.session.query(Proxy).filter(
@@ -80,20 +79,22 @@ class Context:
         self.session.execute(
             f"""
                 UPDATE proxy
-                JOIN (
-                    SELECT
-                        report.proxy_id as proxy_id,
-                        CASE WHEN report.ping = -1 THEN 1 ELSE 0 END AS timeouts,
-                        CASE WHEN report.ping != -1 THEN 1 ELSE 0 END AS successful_pings
-                    FROM report
-                    GROUP BY report.proxy_id
-                ) AS subquery ON proxy.id = subquery.proxy_id
-                SET proxy.connect = CASE
-                    WHEN subquery.timeouts >= {self.max_timeouts} THEN 0
-                    WHEN subquery.successful_pings >= {self.successful_pings} THEN 1
-                    ELSE NULL
-                END;
-            """, {}
+	            JOIN (
+	            	SELECT proxy_id, sum(timeouts) as timeouts, sum(successful_pings) as successful_pings
+	            		from (
+                            SELECT
+                            	report.proxy_id as proxy_id,
+	            				CASE WHEN report.ping = -1 THEN 1 ELSE 0 END AS timeouts,
+                                CASE WHEN report.ping != -1 THEN 1 ELSE 0 END AS successful_pings
+                            FROM report
+	            			) p GROUP BY p.proxy_id
+                 ) AS subquery ON proxy.id = subquery.proxy_id
+	            SET proxy.connect = CASE
+	            	WHEN subquery.timeouts >= {self.max_timeouts} THEN 0
+	            	WHEN subquery.successful_pings >= {self.successful_pings} THEN 1
+	            	ELSE NULL
+	            END;                                    
+            """
         )
         self.session.commit()
 
