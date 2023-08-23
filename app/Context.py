@@ -1,5 +1,4 @@
 import os
-import random
 import mysql.connector
 from sqlalchemy import create_engine, text, func, or_
 from sqlalchemy.orm import sessionmaker
@@ -50,7 +49,7 @@ class Context:
     # endregion
 
     # region proxy
-    def get_top_proxies(self):
+    def get_top_proxies(self, limit):
         return self.session.query(Proxy).filter(
             Proxy.connect == 1
         ).limit(20).all()
@@ -70,9 +69,8 @@ class Context:
             if (commit):
                 self.session.commit()
 
-    def get_proxy_ping(self, agent_id):
-        random_float = random.random()
-        if (random_float <= self.chance_to_check_disconnected):
+    def get_proxy_ping(self, agent_id, disconnect):
+        if (disconnect):
             return self.session.query(Proxy).filter(
                 Proxy.connect == 0
             ).all()

@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from app.controller.proxy_controller import ProxyController
 
 blueprint = Blueprint('proxy', __name__)
@@ -14,6 +14,7 @@ def get_speed_test(agent_id):
 
 @blueprint.route('/ping', methods=['GET'])
 def get_ping(agent_id):
+    disconnect = request.args.get('disconnect')
     result = controller.get_proxies_ping(agent_id)
     result = jsonify(result)
     return result, 200
