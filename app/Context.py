@@ -38,17 +38,9 @@ class Context:
         Session = sessionmaker(bind=engine)
         self.session = Session()
 
-    def _execute_custom_query(self, query):
-        self.session.execute(text(query))
-        self.session.commit()
-
-    # region channel
     def get_all_channel(self):
         return self.session.query(Channel).all()
 
-    # endregion
-
-    # region proxy
     def get_top_proxies(self, limit):
         return self.session.query(Proxy).filter(
             Proxy.connect == 1
@@ -85,7 +77,7 @@ class Context:
         ).all()
 
     def proxies_connection_update(self):
-        self.execute(
+        self.session.execute(
             f"""
                 UPDATE proxy
                 JOIN (
@@ -105,20 +97,11 @@ class Context:
         )
         self.session.commit()
 
-    # endregion
-
-    # region agent
-
     def get_agent(self, agent_id):
         agent = self.session.query(Agent).filter(
             Agent.id == agent_id).first()
         return agent
-    # endregion
 
-    # region isp
-    # endregion
-
-    # region report
     def get_report_count(self, proxy_id):
         return self.session.query(func.count(Report.id)).filter_by(
             proxy_id=proxy_id
@@ -153,9 +136,7 @@ class Context:
                 report.download_speed,
                 report.upload_speed
             )
-    # endregion
 
-    # region setting
     def get_setting(self, key):
         setting = self.session.query(Setting).filter_by(key=key).first()
         return setting
@@ -168,4 +149,3 @@ class Context:
             new_setting = Setting(key=key, value=value)
             self.session.add(new_setting)
         self.session.commit()
-    # endregion
