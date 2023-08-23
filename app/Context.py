@@ -85,7 +85,7 @@ class Context:
         ).all()
 
     def proxies_connection_update(self):
-        self._execute_custom_query(
+        self.execute(
             f"""
                 UPDATE proxy
                 JOIN (
@@ -101,8 +101,9 @@ class Context:
                     WHEN subquery.successful_pings >= {self.successful_pings} THEN 1
                     ELSE NULL
                 END;
-            """
+            """, {}
         )
+        self.session.commit()
 
     # endregion
 
@@ -123,7 +124,7 @@ class Context:
             proxy_id=proxy_id
         ).scalar()
 
-    def add_report(self, agent_id, proxy_id, ping, download_speed, upload_speed, commit=True):
+    def add_report(self, agent_id, proxy_id, ping, download_speed, upload_speed):
         new_report = Report(
             agent_id=agent_id,
             proxy_id=proxy_id,
@@ -140,8 +141,7 @@ class Context:
                     proxy_id=proxy_id
                 ).order_by(Report.updated_at).first()
                 self.session.delete(oldest_report)
-        if (commit):
-            self.session.commit()
+        self.session.commit()
 
     def add_reports(self, agent_id, reports):
         for report in reports:
@@ -151,11 +151,8 @@ class Context:
                 report.proxy_id,
                 report.ping,
                 report.download_speed,
-                report.upload_speed,
-                False
+                report.upload_speed
             )
-        self.session.commit()
-
     # endregion
 
     # region setting

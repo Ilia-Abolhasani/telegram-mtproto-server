@@ -15,6 +15,7 @@ def get_speed_test(agent_id):
 @blueprint.route('/ping', methods=['GET'])
 def get_ping(agent_id):
     disconnect = request.args.get('disconnect')
-    result = controller.get_proxies_ping(agent_id)
+    disconnect = disconnect.lower() == "true"
+    result = controller.get_proxies_ping(agent_id, disconnect)
     result = jsonify(result)
     return result, 200

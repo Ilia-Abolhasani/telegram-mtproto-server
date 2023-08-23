@@ -7,7 +7,7 @@ def start(context, bot_api):
         return
     message_id = int(setting.value)
 
-    proxies = context.get_top_proxies()
+    proxies = context.get_top_proxies(10)
     message = create_message(proxies)
 
     result = bot_api.edit_message_text(message, message_id)
