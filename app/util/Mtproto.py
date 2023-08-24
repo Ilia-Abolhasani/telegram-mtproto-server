@@ -3,6 +3,10 @@ import json
 from urllib.parse import urlparse, parse_qs
 
 
+def create_proxy_link(server, port, secret):
+    return f"https://t.me/proxy?server={server}&port={port}&secret={secret}"
+
+
 def parse_proxy_link(proxy_link):
     parsed_url = urlparse(proxy_link)
     query_params = parse_qs(parsed_url.query)
