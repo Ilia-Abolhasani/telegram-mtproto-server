@@ -5,9 +5,9 @@ blueprint = Blueprint('proxy', __name__)
 controller = ProxyController()
 
 
-@blueprint.route('/speed_test', methods=['GET'])
-def get_speed_test(agent_id):
-    result = controller.get_proxies_speed_test(agent_id)
+@blueprint.route('/speed', methods=['GET'])
+def get_speed(agent_id):
+    result = controller.get_proxies_speed(agent_id)
     result = jsonify(result)
     return result, 200
 

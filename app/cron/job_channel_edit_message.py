@@ -1,7 +1,9 @@
 from app.util.Message import create_message
+from app.cron import job_lock
 
 
-def start(job_lock, context, bot_api):
+def start(context, bot_api):
+    global job_lock
     with job_lock:
         setting = context.get_setting("last_sent_message_id")
         if not setting:

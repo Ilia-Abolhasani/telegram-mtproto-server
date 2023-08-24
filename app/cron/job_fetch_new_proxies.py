@@ -1,13 +1,15 @@
 from app.util.Mtproto import extract_all_mtproto, parse_proxy_link
+from app.cron import job_lock
 
 
-def start(job_lock, context, telegram_api):
+def start(context, telegram_api):
+    global job_lock
     with job_lock:
         channels = context.get_all_channel()
         for channel in channels:
             try:
                 messages, last_message_id = telegram_api.channel_hsitory(
-                    channel.username, 1000, channel.last_id)
+                    channel.username, 100, channel.last_id)
                 proxy_linkes = []
                 # get messages
                 for message in messages:

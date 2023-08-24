@@ -12,8 +12,8 @@ class ProxyController:
             result.append(proxy.to_json())
         return {"result": result}
 
-    def get_proxies_speed_test(self, agent_id):
-        proxies = self.context.get_proxy_speed_tests(agent_id)
+    def get_proxies_speed(self, agent_id):
+        proxies = self.context.get_proxy_speed(agent_id)
         result = []
         for proxy in proxies:
             result.append(proxy.to_json())

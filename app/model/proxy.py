@@ -14,7 +14,10 @@ class Proxy(Base):
     connect = Column(Boolean, nullable=True)
 
     # foreign key 1 to many
-    reports = relationship('Report', back_populates='proxy')
+    ping_reports = relationship(
+        'PingReport', back_populates='proxy', cascade='all, delete-orphan')
+    speed_reports = relationship(
+        'SpeedReport', back_populates='proxy', cascade='all, delete-orphan')
 
     # constrian
     __table_args__ = (UniqueConstraint('server', 'port', 'secret'),)
