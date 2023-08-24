@@ -10,14 +10,18 @@ from app.util.Telegram import Telegram
 from app.util.BotAPI import BotAPI
 from app.config.config import Config
 
+
 def setup_logging(level=logging.INFO):
     root = logging.getLogger()
     root.setLevel(level)
     ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s')
+    formatter = logging.Formatter(
+        '%(asctime)s [%(levelname)s] %(name)s: %(message)s')
     ch.setFormatter(formatter)
     root.addHandler(ch)
+
+
 setup_logging(level=logging.INFO)
 
 logging.basicConfig(level=logging.ERROR,
@@ -42,12 +46,9 @@ telegram_api = Telegram(
     Config.telegram_app_hash,
     Config.telegram_phone,
     Config.database_encryption_key,
-    Config.tdlib_directory,
-    "212.118.37.178",
-    9443,
-    "ee4416004416004400441604416000441663646e2e79656b74616e65742e636f6d646c2e676f6f676c652e636f6d666172616B61762E636F6D160301020001000100000000000000000000000000000000"
+    Config.tdlib_directory
 )
-# telegram_api.remove_all_proxies()
+telegram_api.remove_all_proxies()
 bot_api = BotAPI(Config.bot_chat_id)
 
 start_jobs(context, telegram_api, bot_api)

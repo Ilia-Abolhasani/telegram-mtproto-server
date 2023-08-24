@@ -34,6 +34,7 @@ class Context:
         # Create a session factory
         Session = sessionmaker(bind=engine)
         self.session = Session()
+        print("hi")
 
     def get_all_channel(self):
         return self.session.query(Channel).all()

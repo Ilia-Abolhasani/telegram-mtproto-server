@@ -12,19 +12,19 @@ def start_jobs(context, telegram_api, bot_api):
     # job add message to channel
     scheduler.add_job(
         lambda: job_channel_add_message.start(context, bot_api),
-        trigger=CronTrigger.from_crontab('*/5 * * * *')
+        trigger=CronTrigger.from_crontab('*/15 * * * *')
     )
 
     # job edit last message of channel
     scheduler.add_job(
         lambda: job_channel_edit_message.start(context, bot_api),
-        trigger=CronTrigger.from_crontab('*/5 * * * *')
+        trigger=CronTrigger.from_crontab('*/15 * * * *')
     )
 
     # job test connection of proxy base on reports
     scheduler.add_job(
         lambda: job_connection_analize.start(context),
-        trigger=CronTrigger.from_crontab('*/5 * * * *')
+        trigger=CronTrigger.from_crontab('*/2 * * * *')
     )
 
     # job fetch new proxies from other proxy chaneels
