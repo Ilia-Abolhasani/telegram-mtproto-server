@@ -12,5 +12,6 @@ class Agent(Base):
     encrypted_key = Column(String(128), nullable=False)
 
     # Define the relationship with the Report model
-    reports = relationship('Report', back_populates='agent')
+    ping_reports = relationship('PingReport', back_populates='agent')
+    speed_reports = relationship('SpeedReport', back_populates='agent')
     isp = relationship('ISP', back_populates='agents')
