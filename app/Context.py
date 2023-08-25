@@ -13,6 +13,7 @@ from app.model.proxy import Proxy
 from app.model.speed_report import SpeedReport
 from app.model.ping_report import PingReport
 from app.model.setting import Setting
+from collections.abc import Iterable
 
 
 class Context:
@@ -32,25 +33,34 @@ class Context:
         engine = create_engine(db_url)
         Base.metadata.create_all(engine)
         # Create a session factory
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=engine,)
         self.session = Session()
-        print("hi")
+
+    def _detach(self, obj):
+        if isinstance(obj, Iterable):
+            for item in obj:
+                self.session.expunge(item)
+        else:
+            self.session.expunge(obj)
+        return obj
 
     def get_all_channel(self):
-        return self.session.query(Channel).all()
+        channels = self.session.query(Channel).all()
+        return self._detach(channels)
 
     # proxy
     def get_top_proxies(self, limit):
-        return self.session.query(Proxy).filter(
+        proxies = self.session.query(Proxy).filter(
             Proxy.connect == 1
         ).limit(limit).all()
+        return self._detach(proxies)
 
     def get_proxy(self, server, port, secret):
         proxy = self.session.query(Proxy).filter(
             Proxy.server == server,
             Proxy.port == port,
             Proxy.secret == secret).first()
-        return proxy
+        return self._detach(proxy)
 
     def add_proxy(self, server, port, secret, commit):
         proxy = self.get_proxy(server, port, secret)
@@ -61,19 +71,22 @@ class Context:
                 self.session.commit()
 
     def get_proxy_ping(self, agent_id, disconnect):
+        result = None
         if (disconnect):
-            return self.session.query(Proxy).filter(
+            result = self.session.query(Proxy).filter(
                 Proxy.connect == 0
             ).all()
         else:
-            return self.session.query(Proxy).filter(
+            result = self.session.query(Proxy).filter(
                 or_(Proxy.connect.is_(None), Proxy.connect == 1)
             ).all()
+        return self._detach(result)
 
     def get_proxy_speed(self, agent_id):
-        return self.session.query(Proxy).filter(
+        result = self.session.query(Proxy).filter(
             Proxy.connect == 1
         ).all()
+        return self._detach(result)
 
     def proxies_connection_update(self):
         self.session.execute(
@@ -102,13 +115,14 @@ class Context:
     def get_agent(self, agent_id):
         agent = self.session.query(Agent).filter(
             Agent.id == agent_id).first()
-        return agent
+        return self._detach(agent)
 
     # ping report
     def get_ping_report_count(self, proxy_id):
-        return self.session.query(func.count(PingReport.id)).filter_by(
+        result = self.session.query(func.count(PingReport.id)).filter_by(
             proxy_id=proxy_id
         ).scalar()
+        return result
 
     def add_ping_report(self, agent_id, proxy_id, ping):
         new_report = PingReport(
@@ -138,9 +152,10 @@ class Context:
 
     # speed report
     def get_speed_report_count(self, proxy_id):
-        return self.session.query(func.count(SpeedReport.id)).filter_by(
+        result = self.session.query(func.count(SpeedReport.id)).filter_by(
             proxy_id=proxy_id
         ).scalar()
+        return result
 
     def add_speed_report(self, agent_id, proxy_id, speed):
         new_report = SpeedReport(
@@ -171,7 +186,7 @@ class Context:
     # setting
     def get_setting(self, key):
         setting = self.session.query(Setting).filter_by(key=key).first()
-        return setting
+        return self._detach(setting)
 
     def add_or_update_setting(self, key, value):
         setting = self.session.query(Setting).filter_by(key=key).first()

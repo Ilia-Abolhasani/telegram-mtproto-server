@@ -9,7 +9,7 @@ def start(context, telegram_api):
         for channel in channels:
             try:
                 messages, last_message_id = telegram_api.channel_hsitory(
-                    channel.username, 100, channel.last_id)
+                    channel.username, 500, channel.last_id)
                 proxy_linkes = []
                 # get messages
                 for message in messages:
@@ -18,6 +18,8 @@ def start(context, telegram_api):
                 proxy_linkes = list(set(proxy_linkes))
                 for link in proxy_linkes:
                     server, port, secret = parse_proxy_link(link)
+                    if (len(server) > 255 or len(secret) > 255):
+                        continue
                     context.add_proxy(server, port, secret, False)
                 channel.last_id = last_message_id
                 context.session.commit()
