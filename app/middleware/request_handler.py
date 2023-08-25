@@ -6,6 +6,9 @@ context = Context()
 
 
 def request_handler_middleware():
+    # Exclude the test_route from middleware
+    if request.endpoint == "route.test_route":
+        return None
     # if (request.view_args):
     agent_id = request.view_args.get('agent_id')
     agent = context.get_agent(agent_id)
