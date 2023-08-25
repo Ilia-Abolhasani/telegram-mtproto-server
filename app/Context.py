@@ -23,6 +23,10 @@ class Context:
         self.max_report_speed = 10
         self.max_timeouts = 5
         self.successful_pings = 5
+        self.max_ping_value = 10000
+        self.exponential_decay = 0.9
+        self.ping_score_weight = 0.4
+        self.speed_score_weight = 0.6
         #
         db_name = os.getenv("database_name")
         db_user = os.getenv("database_user")
@@ -50,10 +54,60 @@ class Context:
 
     # proxy
     def get_top_proxies(self, limit):
-        proxies = self.session.query(Proxy).filter(
-            Proxy.connect == 1
-        ).limit(limit).all()
-        return self._detach(proxies)
+        max_avg_speed = self.session.execute(
+            f"""
+                SELECT max(average_spped) FROM (
+                    SELECT proxy_id, AVG(speed) as average_spped FROM speed_report
+                GROUP by proxy_id) t
+            """).scalar()
+        max_ping = self.max_ping_value
+        decay = self.exponential_decay
+        ping_weight = self.ping_score_weight
+        speed_weight = self.speed_score_weight
+
+        query = f"""
+            SELECT
+                p.id AS proxy_id,
+                p.connect AS connect,
+                p.server as server,
+                p.port as port ,
+                p.secret as secret,
+                ({ping_weight} * ping_score + {speed_weight} * speed_score) AS final_weighted_score
+            FROM proxy p
+            LEFT JOIN (
+	            SELECT
+	                proxy_id,
+	                ( {max_ping} - (SUM(weighted_ping) / SUM(weight))) / {max_ping} AS ping_score
+	            FROM (
+                    SELECT
+                        proxy_id,
+                        CASE WHEN ping = -1 THEN {max_ping} ELSE ping END AS adjusted_ping,
+                        ({decay} * POWER({decay}, ROW_NUMBER() OVER (PARTITION BY proxy_id ORDER BY updated_at DESC) - 1)) AS weight,
+                        CASE WHEN ping = -1 THEN {max_ping} ELSE ping END * ({decay} * POWER({decay}, ROW_NUMBER() OVER (PARTITION BY proxy_id ORDER BY updated_at DESC) - 1)) AS weighted_ping
+                    FROM ping_report
+                ) AS weighted_data
+                GROUP BY proxy_id
+            ) r ON p.id = r.proxy_id
+            LEFT JOIN (
+                SELECT
+                    proxy_id,
+                    (SUM(weighted_speed) / SUM(weight)) / {max_avg_speed} AS speed_score
+                FROM (
+                    SELECT
+                        proxy_id,
+                        speed,
+                        ({decay} * POWER({decay}, ROW_NUMBER() OVER (PARTITION BY proxy_id ORDER BY updated_at DESC) - 1)) AS weight,
+                        speed * ({decay} * POWER({decay}, ROW_NUMBER() OVER (PARTITION BY proxy_id ORDER BY updated_at DESC) - 1)) AS weighted_speed
+                    FROM speed_report
+                ) AS weighted_data
+                GROUP BY proxy_id
+            ) q ON p.id = q.proxy_id
+            WHERE connect = 1
+            ORDER BY final_weighted_score DESC
+            LIMIT {limit};
+        """
+        proxies = self.session.execute(query).all()
+        return proxies
 
     def get_proxy(self, server, port, secret):
         proxy = self.session.query(Proxy).filter(
@@ -106,7 +160,7 @@ class Context:
 	            	WHEN subquery.timeouts >= {self.max_timeouts} THEN 0
 	            	WHEN subquery.successful_pings >= {self.successful_pings} THEN 1
 	            	ELSE NULL
-	            END;                                    
+	            END;
             """
         )
         self.session.commit()
