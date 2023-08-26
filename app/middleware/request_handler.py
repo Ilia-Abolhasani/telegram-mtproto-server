@@ -1,7 +1,7 @@
 import hashlib
 from flask import abort, request, jsonify
 from app.Context import Context
-from datetime import datetime
+from datetime import datetime, timezone
 context = Context()
 
 
@@ -37,8 +37,9 @@ def request_handler_middleware():
 
     # Convert the received time string to a datetime object
     received_time = datetime.strptime(request_time, '%Y-%m-%d %H:%M:%S')
+    received_time = received_time.replace(tzinfo=timezone.utc)
     # Calculate the time difference
-    current_time = datetime.now()
+    current_time = datetime.now(timezone.utc)
     time_difference = current_time - received_time
     # Check if the time difference is less than 1 minute (60 seconds)
     if time_difference.total_seconds() > 60:
