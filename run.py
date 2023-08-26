@@ -5,4 +5,4 @@ from app.config.config import Config
 error_handler.register_error_handlers(app)
 
 if __name__ == '__main__':
-    app.run(debug=False, port=Config.server_port)
+    app.run(debug=False, host="0.0.0.0", port=Config.server_port)
