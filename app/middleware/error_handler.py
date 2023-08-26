@@ -25,5 +25,11 @@ def _internal_error(error):
 
 
 def _handle_global_exception(error):
-    traceback.print_exc()
-    return jsonify({"error": "An error occurred"}), 500
+    traceback_str = traceback.format_exc()
+    error_message = f"An error occurred: {str(error)}"
+    response_data = {
+        "error": error_message,
+        "traceback": traceback_str
+    }
+
+    return jsonify(response_data), 500
