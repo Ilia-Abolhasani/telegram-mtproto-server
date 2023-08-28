@@ -55,11 +55,13 @@ class Context:
     # proxy
     def get_top_proxies(self, limit):
         max_avg_speed = self.session.execute(
-            f"""
+            text(
+                f"""
                 SELECT max(average_spped) FROM (
                     SELECT proxy_id, AVG(speed) as average_spped FROM speed_report
                 GROUP by proxy_id) t
-            """).scalar()
+            """)
+        ).scalar()
         max_ping = self.max_ping_value
         decay = self.exponential_decay
         ping_weight = self.ping_score_weight
@@ -106,7 +108,7 @@ class Context:
             ORDER BY final_weighted_score DESC
             LIMIT {limit};
         """
-        proxies = self.session.execute(query).all()
+        proxies = self.session.execute(text(query)).all()
         return proxies
 
     def get_proxy(self, server, port, secret):
