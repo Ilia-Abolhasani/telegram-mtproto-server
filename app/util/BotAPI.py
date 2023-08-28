@@ -9,6 +9,7 @@ class BotAPI:
         bot_api_key = os.getenv("bot_api_key")
         self.bot = Bot(bot_api_key)
         self.chat = chat
+        print(chat)
 
     def send_message(self, text, parse_mode="HTML"):
         result = self.bot.send_message(self.chat, text, parse_mode)
