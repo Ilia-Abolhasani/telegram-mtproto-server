@@ -79,7 +79,7 @@ class Context:
                 p.server as server,
                 p.port as port ,
                 p.secret as secret,
-                ({ping_weight} * ping_score + {speed_weight} * speed_score) AS final_weighted_score
+                COALESCE({ping_weight} * ping_score + {speed_weight} * speed_score, 0) AS final_weighted_score
             FROM proxy p
             LEFT JOIN (
 	            SELECT
