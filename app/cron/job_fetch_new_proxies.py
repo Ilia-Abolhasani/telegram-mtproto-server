@@ -12,6 +12,7 @@ def start(context, telegram_api):
                 messages, last_message_id = telegram_api.channel_hsitory(
                     channel.username, 500, channel.last_id)
                 proxy_linkes = []
+                print(len(messages))
                 # get messages
                 for message in messages:
                     for link in extract_all_mtproto(message):
@@ -25,5 +26,5 @@ def start(context, telegram_api):
                 channel.last_id = last_message_id
                 context.session.commit()
             except Exception as e:
-                context.session.rollback()
                 print("Error:", e)
+                context.session.rollback()
