@@ -41,7 +41,7 @@ class Context:
         self.session = Session()
 
     def _detach(self, obj):
-        if(obj is None):
+        if (obj is None):
             return obj
         if isinstance(obj, Iterable):
             for item in obj:
@@ -147,8 +147,7 @@ class Context:
         return self._detach(result)
 
     def proxies_connection_update(self):
-        self.session.execute(
-            f"""
+        query = f"""
                 UPDATE proxy
 	            JOIN (
 	            	SELECT proxy_id, sum(timeouts) as timeouts, sum(successful_pings) as successful_pings
@@ -166,7 +165,7 @@ class Context:
 	            	ELSE NULL
 	            END;
             """
-        )
+        self.session.execute(text(query))
         self.session.commit()
 
     # agent
