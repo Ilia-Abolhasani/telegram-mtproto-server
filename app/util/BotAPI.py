@@ -8,7 +8,8 @@ class BotAPI:
     def __init__(self, chat):
         bot_api_key = os.getenv("bot_api_key")
         self.bot = Bot(bot_api_key)
-        self.chat = chat
+        print(bot_api_key)
+        self.chat = "@mtprotoAI"  # todo
         print(chat)
 
     def send_message(self, text, parse_mode="HTML"):
