@@ -41,6 +41,8 @@ class Context:
         self.session = Session()
 
     def _detach(self, obj):
+        if(obj is None):
+            return obj
         if isinstance(obj, Iterable):
             for item in obj:
                 self.session.expunge(item)

@@ -6,5 +6,4 @@ def create_message(proxies):
     for proxy in proxies:
         url = Mtproto.create_proxy_link(proxy.server, proxy.port, proxy.secret)
         message += f"\n<a href='{url}'>Proxy</a>"
-        print(url)
     return message
