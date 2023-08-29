@@ -50,6 +50,9 @@ class Context:
             self.session.expunge(obj)
         return obj
 
+    def attach(self, obj):
+        self.session.add(obj)
+
     def get_all_channel(self):
         channels = self.session.query(Channel).all()
         return self._detach(channels)

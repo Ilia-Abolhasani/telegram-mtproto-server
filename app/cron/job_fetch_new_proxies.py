@@ -23,6 +23,7 @@ def start(context, telegram_api):
                     if (len(server) > 255 or len(secret) > 255):
                         continue
                     context.add_proxy(server, port, secret, False)
+                context.attach(channel)
                 channel.last_id = last_message_id
                 context.session.commit()
             except Exception as e:
