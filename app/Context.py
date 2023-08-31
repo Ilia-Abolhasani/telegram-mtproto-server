@@ -79,11 +79,14 @@ class Context:
                 p.server as server,
                 p.port as port ,
                 p.secret as secret,
-                COALESCE({ping_weight} * ping_score + {speed_weight} * speed_score, 0) AS final_weighted_score
+                COALESCE({ping_weight} * ping_score + {speed_weight} * speed_score, 0) AS final_weighted_score,
+                COALESCE(average_ping, {max_ping}) AS average_ping,
+                average_speed AS average_speed
             FROM proxy p
             LEFT JOIN (
 	            SELECT
 	                proxy_id,
+                    AVG(adjusted_ping) as average_ping,
 	                ( {max_ping} - (SUM(weighted_ping) / SUM(weight))) / {max_ping} AS ping_score
 	            FROM (
                     SELECT
@@ -98,6 +101,7 @@ class Context:
             LEFT JOIN (
                 SELECT
                     proxy_id,
+                    AVG(speed) as average_speed,
                     (SUM(weighted_speed) / SUM(weight)) / {max_avg_speed} AS speed_score
                 FROM (
                     SELECT

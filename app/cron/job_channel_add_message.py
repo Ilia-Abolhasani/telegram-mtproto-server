@@ -5,7 +5,7 @@ from app.cron import job_lock
 def start(context, bot_api):
     global job_lock
     with job_lock:
-        proxies = context.get_top_proxies(10)
+        proxies = context.get_top_proxies(7)
         message = create_message(proxies)
         result = bot_api.send_message(message)
         message_id = result.message_id
