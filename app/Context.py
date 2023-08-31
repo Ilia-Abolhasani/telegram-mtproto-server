@@ -57,7 +57,21 @@ class Context:
         channels = self.session.query(Channel).all()
         return self._detach(channels)
 
+    def count_channels(self):
+        result = self.session.query(func.count(Channel.id)).scalar()
+        return result
+
     # proxy
+    def count_connect_proxies(self):
+        result = self.session.query(func.count(Proxy.id)).filter(
+            Proxy.connect == 1
+        ).scalar()
+        return result
+
+    def count_total_proxies(self):
+        result = self.session.query(func.count(Proxy.id)).scalar()
+        return result
+
     def get_top_proxies(self, limit):
         max_avg_speed = self.session.execute(
             text(
@@ -80,13 +94,12 @@ class Context:
                 p.port as port ,
                 p.secret as secret,
                 COALESCE({ping_weight} * ping_score + {speed_weight} * speed_score, 0) AS final_weighted_score,
-                COALESCE(average_ping, {max_ping}) AS average_ping,
+                COALESCE(latest_ping, {max_ping}) AS latest_ping,
                 average_speed AS average_speed
             FROM proxy p
             LEFT JOIN (
 	            SELECT
 	                proxy_id,
-                    AVG(adjusted_ping) as average_ping,
 	                ( {max_ping} - (SUM(weighted_ping) / SUM(weight))) / {max_ping} AS ping_score
 	            FROM (
                     SELECT
@@ -113,6 +126,19 @@ class Context:
                 ) AS weighted_data
                 GROUP BY proxy_id
             ) q ON p.id = q.proxy_id
+            LEFT JOIN (
+            SELECT
+                proxy_id,
+                CASE WHEN ping = -1 THEN {max_ping} ELSE ping END AS latest_ping
+                FROM (
+                    SELECT                    
+                        proxy_id,
+                        ping,
+                        ROW_NUMBER() OVER (PARTITION BY proxy_id ORDER BY updated_at DESC) AS rn
+                    FROM ping_report
+                ) as ranked
+                WHERE rn = 1
+            ) u ON p.id = u.proxy_id
             WHERE connect = 1
             ORDER BY final_weighted_score DESC
             LIMIT {limit};

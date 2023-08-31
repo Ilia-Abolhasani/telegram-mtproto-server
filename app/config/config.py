@@ -18,3 +18,4 @@ class Config:
     download_timeout = os.getenv("download_timeout")
     bot_api_key = os.getenv("bot_api_key")
     bot_chat_id = os.getenv("bot_chat_id")
+    message_limit_proxy = 7
