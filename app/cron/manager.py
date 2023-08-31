@@ -9,7 +9,7 @@ import app.cron.job_fetch_new_proxies as job_fetch_new_proxies
 def start_jobs(context, telegram_api, bot_api):
     scheduler = BackgroundScheduler(
         {'apscheduler.job_defaults.max_instances': 5})
-    job_channel_add_message.start(context, bot_api)
+    job_fetch_new_proxies.start(context, telegram_api)
     # job add message to channel
     scheduler.add_job(
         lambda: job_channel_add_message.start(context, bot_api),
