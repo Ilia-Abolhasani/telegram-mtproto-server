@@ -231,18 +231,15 @@ class Context:
         return self._exec(_f, session)
 
     # agent
-
     def get_agent(self, agent_id, session=None):
-        def _f(session):
-            return session.query(Agent).filter(
-                Agent.id == agent_id).first()
-        return self._exec(_f, session)
+        return self._exec(lambda sess: sess.query(Agent).filter(
+            Agent.id == agent_id).first(), session)
 
     def get_all_agents(self, session=None):
         return self._exec(
             lambda sess: sess.query(Agent).all(), session)
-    # ping report
 
+    # ping report
     def get_ping_report_count(self, proxy_id, session=None):
         return self._exec(
             lambda sess: sess.query(func.count(PingReport.id)).filter_by(
