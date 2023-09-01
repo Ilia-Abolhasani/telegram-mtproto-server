@@ -1,6 +1,7 @@
 from app.util.Message import create_message
 from app.cron import job_lock
 from app.config.config import Config
+from app.action.top_proxies import get_top_proxies
 
 
 def start(context, bot_api):
@@ -11,7 +12,7 @@ def start(context, bot_api):
             return
         message_id = int(setting.value)
 
-        proxies = context.get_top_proxies(Config.message_limit_proxy)
+        proxies = get_top_proxies(context, Config.message_limit_proxy)
         connect_num = context.count_connect_proxies()
         total = context.count_total_proxies()
         channels_num = context.count_channels()

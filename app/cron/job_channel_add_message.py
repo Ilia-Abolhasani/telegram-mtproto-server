@@ -8,11 +8,7 @@ import time
 def start(context, bot_api):
     global job_lock
     with job_lock:
-        start_time = time.time()
         proxies = get_top_proxies(context, Config.message_limit_proxy)
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f'get_top_proxies elapsed time: {elapsed_time}')
         connect_num = context.count_connect_proxies()
         total = context.count_total_proxies()
         channels_num = context.count_channels()
