@@ -1,4 +1,5 @@
 from app.util.Mtproto import extract_all_mtproto, parse_proxy_link
+from app.util.DotDict import DotDict
 from app.cron import job_lock
 
 
@@ -16,14 +17,22 @@ def start(context, telegram_api):
                     for link in extract_all_mtproto(message):
                         proxy_linkes.append(link)
                 proxy_linkes = list(set(proxy_linkes))
+                proxies = []
                 for link in proxy_linkes:
                     server, port, secret = parse_proxy_link(link)
                     if (len(server) > 255 or len(secret) > 255):
                         continue
-                    context.add_proxy(server, port, secret, False)
-                context.attach(channel)
-                channel.last_id = last_message_id
-                context.session.commit()
+                    proxies.append(
+                        DotDict(
+                            {
+                                "server": server,
+                                "port": port,
+                                "secret": secret
+                            }
+                        )
+                    )
+                context.add_proxies_of_channel(proxies,
+                                               channel,
+                                               last_message_id)
             except Exception as e:
                 print("Error:", e)
-                context.session.rollback()

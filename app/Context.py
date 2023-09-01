@@ -54,19 +54,22 @@ class Context:
                 if not new_session.is_active:
                     with new_session.begin() as transaction:
                         result = query(new_session)
-                    return result
                 else:
                     result = query(new_session)
-                    return result
+
+                if new_session.dirty:
+                    new_session.commit()
+                new_session.close()
+                return result
 
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             if new_session:
                 new_session.rollback()
-        finally:
-            if new_session:
                 new_session.close()
+            raise e
 
+    # channel
     def get_all_channel(self, session=None):
         return self._exec(
             lambda sess: sess.query(Channel).all(), session)
@@ -74,6 +77,14 @@ class Context:
     def count_channels(self, session=None):
         return self._exec(
             lambda sess: sess.query(func.count(Channel.id)).scalar(), session)
+
+    def add_proxies_of_channel(self, proxies, channel, last_message_id, session=None):
+        def _f(session):
+            for proxy in proxies:
+                self.add_proxy(proxy.server, proxy.port, proxy.secret, session)
+            session.add(channel)
+            channel.last_id = last_message_id
+        return self._exec(_f, session)
 
     # proxy
     def count_connect_proxies(self, session=None):
@@ -175,7 +186,6 @@ class Context:
             if (not proxy):
                 new_proxy = Proxy(server=server, port=port, secret=secret)
                 session.add(new_proxy)
-                session.commit()
         return self._exec(_f, session)
 
     def get_proxy_ping(self, agent_id, disconnect, session=None):
@@ -218,16 +228,15 @@ class Context:
 	                END;
                 """
             session.execute(text(query))
-            session.commit()
         return self._exec(_f, session)
 
     # agent
 
     def get_agent(self, agent_id, session=None):
-        return self._exec(
-            lambda sess: sess.query(Agent).filter(
-                Agent.id == agent_id).first(),
-            session)
+        def _f(session):
+            return session.query(Agent).filter(
+                Agent.id == agent_id).first()
+        return self._exec(_f, session)
 
     def get_all_agents(self, session=None):
         return self._exec(
@@ -252,7 +261,7 @@ class Context:
                         proxy_id=proxy_id
                     ).order_by(PingReport.updated_at).first()
                     session.delete(oldest_report)
-            session.commit()
+
         return self._exec(_f, session)
 
     def add_bach_ping_report(self, agent_id, reports, session=None):
@@ -286,7 +295,6 @@ class Context:
                         proxy_id=proxy_id
                     ).order_by(SpeedReport.updated_at).first()
                     session.delete(oldest_report)
-            session.commit()
         return self._exec(_f, session)
 
     def add_bach_speed_report(self, agent_id, reports, session=None):
@@ -314,5 +322,4 @@ class Context:
             else:
                 new_setting = Setting(key=key, value=value)
                 self.session.add(new_setting)
-            session.commit()
         return self._exec(_f, session)
