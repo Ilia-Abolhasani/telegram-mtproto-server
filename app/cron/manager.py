@@ -10,10 +10,8 @@ def start_jobs(context, telegram_api, bot_api):
     scheduler = BackgroundScheduler(
         {'apscheduler.job_defaults.max_instances': 5})
     # job add message to channel
-    scheduler.add_job(
-        lambda: job_channel_add_message.start(context, bot_api),
-        trigger=CronTrigger.from_crontab('0 */1 * * *')
-    )
+
+    job_channel_add_message.start(context, bot_api)
 
     # job edit last message of channel
     scheduler.add_job(
