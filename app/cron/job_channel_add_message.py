@@ -1,6 +1,7 @@
 from app.util.Message import create_message
 from app.cron import job_lock
 from app.config.config import Config
+from app.action.top_proxies import get_top_proxies
 import time
 
 
@@ -8,7 +9,7 @@ def start(context, bot_api):
     global job_lock
     with job_lock:
         start_time = time.time()
-        proxies = context.get_top_proxies(Config.message_limit_proxy)
+        proxies = get_top_proxies(context, Config.message_limit_proxy)
         end_time = time.time()
         elapsed_time = end_time - start_time
         print(f'get_top_proxies elapsed time: {elapsed_time}')

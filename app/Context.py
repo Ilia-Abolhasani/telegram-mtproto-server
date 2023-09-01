@@ -173,6 +173,12 @@ class Context:
             return proxies
         return self._exec(_f, session)
 
+    def get_connected_proxise(self, session=None):
+        return self._exec(
+            lambda sess: sess.query(Proxy).filter(
+                Proxy.connect == 1
+            ).all(), session)
+
     def get_proxy(self, server, port, secret, session=None):
         return self._exec(
             lambda sess: sess.query(Proxy).filter(
@@ -230,7 +236,11 @@ class Context:
             session.execute(text(query))
         return self._exec(_f, session)
 
+    def get_all_isps(self, session=None):
+        return self._exec(
+            lambda sess: sess.query(ISP).all(), session)
     # agent
+
     def get_agent(self, agent_id, session=None):
         return self._exec(lambda sess: sess.query(Agent).filter(
             Agent.id == agent_id).first(), session)
@@ -240,6 +250,14 @@ class Context:
             lambda sess: sess.query(Agent).all(), session)
 
     # ping report
+    def get_connected_proxise_ping_reports(self, session=None):
+        return self._exec(
+            lambda sess: sess.query(PingReport).filter(
+                PingReport.proxy_id.in_(
+                    sess.query(Proxy.id
+                               ).filter(Proxy.connect == 1))
+            ).all(), session)
+
     def get_ping_report_count(self, proxy_id, session=None):
         return self._exec(
             lambda sess: sess.query(func.count(PingReport.id)).filter_by(
@@ -274,6 +292,14 @@ class Context:
         return self._exec(_f, session)
 
     # speed report
+    def get_connected_proxise_speed_reports(self, session=None):
+        return self._exec(
+            lambda sess: sess.query(SpeedReport).filter(
+                SpeedReport.proxy_id.in_(
+                    sess.query(Proxy.id
+                               ).filter(Proxy.connect == 1))
+            ).all(), session)
+
     def get_speed_report_count(self, proxy_id, session=None):
         return self._exec(
             lambda sess: sess.query(func.count(SpeedReport.id)).filter_by(

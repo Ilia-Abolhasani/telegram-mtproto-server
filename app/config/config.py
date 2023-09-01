@@ -19,3 +19,8 @@ class Config:
     bot_api_key = os.getenv("bot_api_key")
     bot_chat_id = os.getenv("bot_chat_id")
     message_limit_proxy = 7
+    max_ping_value = 10000
+    exponential_decay = 0.9
+    contribute_history = 5
+    ping_score_weight = 0.6
+    speed_score_weight = 0.4
