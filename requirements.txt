@@ -7,3 +7,4 @@ mysql-connector-python
 pytgbot==4.9.1
 Flask
 apscheduler
+pandas==1.5.3
