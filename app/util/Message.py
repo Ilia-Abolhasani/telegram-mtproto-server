@@ -28,8 +28,8 @@ def create_message(proxies, connect_num, total, channels_num):
 
     for proxy in proxies:
         url = Mtproto.create_proxy_link(proxy.server, proxy.port, proxy.secret)
-
-        speed = f"<b>speed:</b> {padding(proxy.average_speed // 1, 5)} kB/s"
+        speed = round(proxy.average_speed / 1024, 2)
+        speed = f"<b>speed:</b> {padding(speed, 5)} MB/s"
         ping = f"<b>ping:</b> {padding(proxy.average_ping // 1, 5)} ms"
         star = create_star(proxy.average_ping, proxy.average_speed)
         proxy_info = f"<i><a href='{url}'>📶 Connect Proxy</a> {star}\nℹ️ {speed}| {ping}</i>\n"
