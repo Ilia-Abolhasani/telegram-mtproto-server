@@ -22,7 +22,7 @@ def setup_logging(level=logging.INFO):
     root.addHandler(ch)
 
 
-setup_logging(level=logging.INFO)
+setup_logging(level=logging.ERROR)
 
 logging.basicConfig(level=logging.ERROR,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
