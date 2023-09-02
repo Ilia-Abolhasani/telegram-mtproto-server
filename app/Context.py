@@ -186,7 +186,11 @@ class Context:
 
     def add_ping_report(self, agent_id, proxy_id, ping, session=None):
         def _f(session):
-            new_report = PingReport(agent_id, proxy_id, ping)
+            new_report = PingReport(
+                agent_id=agent_id,
+                proxy_id=proxy_id,
+                ping=ping
+            )
             session.add(new_report)
             count = self.get_ping_report_count(proxy_id, session)
             if (count >= self.max_report_ping):
@@ -228,7 +232,8 @@ class Context:
 
     def add_speed_report(self, agent_id, proxy_id, speed, session=None):
         def _f(session):
-            new_report = SpeedReport(agent_id, proxy_id, speed)
+            new_report = SpeedReport(
+                agent_id=agent_id, proxy_id=proxy_id, speed=speed)
             session.add(new_report)
             count = self.get_speed_report_count(proxy_id, session)
             if (count >= self.max_report_speed):
