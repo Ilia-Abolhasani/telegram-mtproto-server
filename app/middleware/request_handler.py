@@ -7,6 +7,8 @@ context = Context()
 
 def request_handler_middleware():
     # Exclude the test_route from middleware
+    if request.path == '/favicon.ico':
+        return None
     if request.endpoint == "route.test_route":
         return None
     # if (request.view_args):
