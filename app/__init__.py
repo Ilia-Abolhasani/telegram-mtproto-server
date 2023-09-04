@@ -49,6 +49,6 @@ telegram_api = Telegram(
     Config.tdlib_directory
 )
 telegram_api.remove_all_proxies()
-bot_api = BotAPI(Config.bot_chat_id)
+bot_api = BotAPI()
 
 start_jobs(context, telegram_api, bot_api)

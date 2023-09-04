@@ -1,14 +1,14 @@
 import os
 from pytgbot import Bot
+from app.config.config import Config
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
 
 class BotAPI:
-    def __init__(self, chat):
-        bot_api_key = os.getenv("bot_api_key")
-        self.bot = Bot(bot_api_key)
-        self.chat = chat
+    def __init__(self):
+        self.bot = Bot(Config.bot_api_key)
+        self.chat = Config.bot_chat_id
 
     def send_message(self, text, parse_mode="HTML"):
         result = self.bot.send_message(self.chat, text, parse_mode)

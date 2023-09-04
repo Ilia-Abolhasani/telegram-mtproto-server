@@ -1,6 +1,5 @@
 python-dotenv
 python-telegram # todo add this to our code
-timeout-decorator
 sqlalchemy==1.4.49
 schedule
 mysql-connector-python
