@@ -1,6 +1,8 @@
 import traceback
 from flask import Flask
 from flask import jsonify
+from app.util.LoggerBot import LoggerBot
+logger_bot = LoggerBot()
 
 
 def register_error_handlers(app):
@@ -20,16 +22,16 @@ def _not_found_error(error):
 
 
 def _internal_error(error):
-    traceback.print_exc()
+    traceback_str = traceback.format_exc()
+    error_message = f"Internal server error: {str(error)}"
+    message = f"{error_message}\n\n{traceback_str}"
+    logger_bot.send(message)
     return jsonify({"error": "Internal server error"}), 500
 
 
 def _handle_global_exception(error):
     traceback_str = traceback.format_exc()
     error_message = f"An error occurred: {str(error)}"
-    response_data = {
-        "error": error_message,
-        "traceback": traceback_str
-    }
-
-    return jsonify(response_data), 500
+    message = f"{error_message}\n\n{traceback_str}"
+    logger_bot.send(message)
+    return jsonify("An error occurred"), 500

@@ -1,13 +1,13 @@
 import json
 from flask import Blueprint, jsonify, request
-from app.controller.bot_controller import BotController
+from app.controller.log_controller import LogController
 
-blueprint = Blueprint('bot', __name__)
-controller = BotController()
+blueprint = Blueprint('lot', __name__)
+controller = LogController()
 
 
-@blueprint.route('/message', methods=['POST'])
-def post_message(agent_id):
+@blueprint.route('/recive', methods=['POST'])
+def post_log(agent_id):
     data = request.data
     decoded_data = data.decode('utf-8')
     json_object = json.loads(decoded_data)
@@ -15,7 +15,7 @@ def post_message(agent_id):
     parse_mode = "HTML"
     if ("parse_mode" in json_object):
         parse_mode = json_object['parse_mode']
-    result = controller.add_message(message, parse_mode)
+    result = controller.send_log(agent_id, message, parse_mode)
     return jsonify({"message_id": result.message_id}), 200
 
 
