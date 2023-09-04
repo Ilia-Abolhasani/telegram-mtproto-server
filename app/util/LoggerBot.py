@@ -10,6 +10,6 @@ class LoggerBot:
         self.bot = Bot(Config.loggger_bot_api_key)
         self.chat = Config.loggger_bot_chat_id
 
-    def send(self, text, parse_mode="HTML"):
-        result = self.bot.send_message(self.chat, text, parse_mode)
+    def send(self, text):
+        result = self.bot.send_message(self.chat, text)
         return result
