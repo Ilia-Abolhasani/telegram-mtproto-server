@@ -196,7 +196,6 @@ class Context:
             if (count >= self.max_report_ping):
                 for _ in range(self.max_report_ping, count):
                     oldest_report = session.query(PingReport).filter_by(
-                        agent_id=agent_id,
                         proxy_id=proxy_id
                     ).order_by(PingReport.updated_at).first()
                     session.delete(oldest_report)
@@ -239,7 +238,6 @@ class Context:
             if (count >= self.max_report_speed):
                 for _ in range(self.max_report_speed, count):
                     oldest_report = session.query(SpeedReport).filter_by(
-                        agent_id=agent_id,
                         proxy_id=proxy_id
                     ).order_by(SpeedReport.updated_at).first()
                     session.delete(oldest_report)
