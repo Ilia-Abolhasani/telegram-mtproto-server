@@ -35,4 +35,5 @@ def start(context, telegram_api):
                                                channel,
                                                last_message_id)
             except Exception as e:
+                print("Error in channel: " + channel)
                 print("Error:", e)
