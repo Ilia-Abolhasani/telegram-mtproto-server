@@ -1,13 +1,14 @@
 from app.util.Mtproto import extract_all_mtproto, parse_proxy_link
 from app.util.DotDict import DotDict
 from app.cron import job_lock
+from tqdm import tqdm
 
 
 def start(context, telegram_api):
     global job_lock
     with job_lock:
         channels = context.get_all_channel()
-        for channel in channels:
+        for channel in tqdm(channels):
             try:
                 messages, last_message_id = telegram_api.channel_hsitory(
                     channel.username, 500, channel.last_id)
