@@ -10,8 +10,19 @@ def start(context, telegram_api):
         channels = context.get_all_channel()
         for channel in tqdm(channels):
             try:
-                messages, last_message_id = telegram_api.channel_hsitory(
-                    channel.username, 500, channel.last_id)
+                if (not channel.chat_id):
+                    if (channel.is_public):
+                        chat_id = telegram_api.search_public_chat(
+                            channel.username)
+                        if (not chat_id):
+                            raise Exception(
+                                f"public channel username '{channel.username}' not found!")
+                        channel.chat_id = chat_id
+                    else:
+                        raise Exception("private channel without chat_id!")
+
+                messages, last_message_id = telegram_api.channel_history(
+                    channel.chat_id, 500, channel.last_id)
                 proxy_linkes = []
                 # get messages
                 for message in messages:
