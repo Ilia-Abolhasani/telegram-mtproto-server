@@ -177,7 +177,7 @@ class Context:
     	                    SELECT proxy_id FROM `ping_report`
 	                            WHERE ping = -1 and deleted_at is null
 	                            GROUP by proxy_id
-	                            HAVING COUNT(id) = {threshold}
+	                            HAVING COUNT(id) >= {threshold}
 	                );
                     """
             session.execute(text(query))
