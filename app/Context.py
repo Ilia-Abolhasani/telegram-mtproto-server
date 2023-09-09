@@ -19,7 +19,7 @@ from collections.abc import Iterable
 class Context:
     def __init__(self):
         # config
-        self.max_report_ping = 10
+        self.max_report_ping = 30
         self.max_report_speed = 10
         self.max_timeouts = 5
         self.successful_pings = 5
@@ -68,11 +68,15 @@ class Context:
     # channel
     def get_all_channel(self, session=None):
         return self._exec(
-            lambda sess: sess.query(Channel).all(), session)
+            lambda sess: sess.query(Channel)
+            .filter(Channel.deleted_at == None)
+            .all(), session)
 
     def count_channels(self, session=None):
         return self._exec(
-            lambda sess: sess.query(func.count(Channel.id)).scalar(), session)
+            lambda sess: sess.query(func.count(Channel.id))
+            .filter(Channel.deleted_at == None)
+            .scalar(), session)
 
     def add_proxies_of_channel(self, proxies, channel, last_message_id, session=None):
         def _f(session):
@@ -86,20 +90,25 @@ class Context:
     def count_connect_proxies(self, session=None):
         return self._exec(
             lambda sess: sess.query(func.count(Proxy.id)).filter(
-                Proxy.connect == 1
+                Proxy.connect == 1,
+                Proxy.deleted_at == None
             ).scalar(), session)
 
     def count_total_proxies(self, session=None):
+        # include deleted_at
         return self._exec(
-            lambda sess: sess.query(func.count(Proxy.id)).scalar(), session)
+            lambda sess: sess.query(func.count(Proxy.id))
+            .scalar(), session)
 
     def get_connected_proxise(self, session=None):
         return self._exec(
             lambda sess: sess.query(Proxy).filter(
-                Proxy.connect == 1
+                Proxy.connect == 1,
+                Proxy.deleted_at == None
             ).all(), session)
 
     def get_proxy(self, server, port, secret, session=None):
+        # include deleted_at
         return self._exec(
             lambda sess: sess.query(Proxy).filter(
                 Proxy.server == server,
@@ -112,27 +121,31 @@ class Context:
             if (not proxy):
                 new_proxy = Proxy(server=server, port=port, secret=secret)
                 session.add(new_proxy)
+            elif (proxy.deleted_at):
+                proxy.deleted_at = None
         return self._exec(_f, session)
 
     def get_proxy_ping(self, agent_id, disconnect, session=None):
         if (disconnect):
             return self._exec(
                 lambda sess: sess.query(Proxy).filter(
-                    Proxy.connect == 0
+                    Proxy.connect == 0,
+                    Proxy.deleted_at == None
                 ).all(), session)
         else:
             return self._exec(
                 lambda sess: sess.query(Proxy).filter(
-                    or_(Proxy.connect.is_(None), Proxy.connect == 1)
+                    or_(Proxy.connect.is_(None), Proxy.connect == 1),
+                    Proxy.deleted_at == None
                 ).all(), session)
 
     def get_proxy_speed(self, agent_id, session=None):
         return self._exec(
             lambda sess: sess.query(Proxy).filter(
-                Proxy.connect == 1
+                Proxy.connect == 1,
+                Proxy.deleted_at == None
             ).all(), session)
 
-    # todo
     def proxies_connection_update(self, session=None):
         def _f(session):
             query = f"""
@@ -156,26 +169,69 @@ class Context:
             session.execute(text(query))
         return self._exec(_f, session)
 
+    def delete_dead_proxies(self, threshold, session=None):
+        def _f(session):
+            query = f"""
+                    UPDATE proxy set deleted_at = NOW()
+                        WHERE deleted_at is null and proxy.id in (
+    	                    SELECT proxy_id FROM `ping_report`
+	                            WHERE ping = -1 and deleted_at is null
+	                            GROUP by proxy_id
+	                            HAVING COUNT(id) = {threshold}
+	                );
+                    """
+            session.execute(text(query))
+            query = f"""
+                    DELETE FROM ping_report
+                        WHERE
+                            ping_report.proxy_id in (
+                                SELECT proxy.id FROM proxy
+                                    WHERE deleted_at is not null
+                            );
+                    """
+            session.execute(text(query))
+            query = f"""
+                    DELETE FROM speed_report
+                        WHERE
+                            speed_report.proxy_id in (
+                                SELECT proxy.id FROM proxy
+                                    WHERE deleted_at is not null
+                    );
+                """
+            session.execute(text(query))
+        return self._exec(_f, session)
+
     def get_all_isps(self, session=None):
         return self._exec(
-            lambda sess: sess.query(ISP).all(), session)
+            lambda sess: sess.query(ISP)
+            .filter(ISP.deleted_at == None)
+            .all(), session)
     # agent
 
     def get_agent(self, agent_id, session=None):
-        return self._exec(lambda sess: sess.query(Agent).filter(
-            Agent.id == agent_id).first(), session)
+        return self._exec(lambda sess: sess.query(Agent)
+                          .filter(
+                              Agent.id == agent_id,
+                              Agent.deleted_at == None)
+                          .first(), session)
 
     def get_all_agents(self, session=None):
         return self._exec(
-            lambda sess: sess.query(Agent).all(), session)
+            lambda sess: sess.query(Agent)
+            .filter(Agent.deleted_at == None)
+            .all(), session)
 
     # ping report
     def get_connected_proxise_ping_reports(self, session=None):
         return self._exec(
             lambda sess: sess.query(PingReport).filter(
                 PingReport.proxy_id.in_(
-                    sess.query(Proxy.id
-                               ).filter(Proxy.connect == 1))
+                    sess.query(Proxy.id)
+                    .filter(
+                        Proxy.connect == 1,
+                        Proxy.deleted_at == None
+                    )
+                )
             ).all(), session)
 
     def get_ping_report_count(self, proxy_id, session=None):
@@ -219,8 +275,12 @@ class Context:
         return self._exec(
             lambda sess: sess.query(SpeedReport).filter(
                 SpeedReport.proxy_id.in_(
-                    sess.query(Proxy.id
-                               ).filter(Proxy.connect == 1))
+                    sess.query(Proxy.id)
+                    .filter(
+                        Proxy.connect == 1,
+                        Proxy.deleted_at == None
+                    )
+                )
             ).all(), session)
 
     def get_speed_report_count(self, proxy_id, session=None):

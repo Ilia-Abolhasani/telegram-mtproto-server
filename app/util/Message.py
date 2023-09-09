@@ -1,12 +1,5 @@
 import app.util.Mtproto as Mtproto
-
-
-def padding(text, num):
-    text = str(text)
-    l = len(text)
-    for i in range(l, num):
-        text = " " + text + " "
-    return text
+from app.util.StringOperation import padding, current_solar_date, persian_numeral
 
 
 def create_star(ping, speed):
@@ -35,9 +28,10 @@ def create_message(proxies, connect_num, total, channels_num):
         proxy_info = f"<i><a href='{url}'>📶 Connect Proxy {star}</a>\nℹ️ {speed} | {ping}</i>\n"
         message += proxy_info + "\n"
 
-    message += "<b>Database Status:</b>\n"
-    message += f"🔗 Connected Proxies: {connect_num}\n"
-    message += f"📊 Total Existing Proxies: {total}\n"
-    message += f"📡 Number of Explored Proxy Channels: {channels_num}\n"
+    current_date = current_solar_date()
+    message += f"<b>وضعیت مجموعه در این لحظه (<i>{current_date}</i>):</b>\n"
+    message += f"🔗 <b>{connect_num}</b> پروکسی قابلیت وصل شدند دارند.\n"
+    message += f"📊 <b>{total}</b> پروکسی منحصر بفرد وجود دارد.\n"
+    message += f"📡 <b>{channels_num}</b> کانال پروکسی دائم در حال بررسی شدند هستند.\n"
     message += "\n🆔 @mtprotoAI"
     return message
