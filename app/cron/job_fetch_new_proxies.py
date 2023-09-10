@@ -4,7 +4,7 @@ from app.cron import job_lock
 from tqdm import tqdm
 
 
-def start(context, telegram_api):
+def start(context, telegram_api, logger_api):
     global job_lock
     with job_lock:
         channels = context.get_all_channel()
@@ -46,6 +46,6 @@ def start(context, telegram_api):
                 context.add_proxies_of_channel(proxies,
                                                channel,
                                                last_message_id)
-            except Exception as e:
-                print("Error in channel: " + channel)
-                print("Error:", e)
+            except Exception as error:
+                logger_api.announce(
+                    error, f"Job fetch new proxy erro at channel_id {channel.id}.")

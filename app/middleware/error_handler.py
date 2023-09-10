@@ -22,22 +22,16 @@ def _not_found_error(error):
 
 
 def _internal_error(error):
-    traceback_str = traceback.format_exc()
-    error_message = f"Internal server error: {str(error)}"
-    message = f"{error_message}\n\n{traceback_str}"
     try:
-        logger_bot.send(message)
+        logger_bot.announce(error, "Internal server error:")
     except Exception as send_error:
         return jsonify("Internal server error."), 500
     return jsonify({"error": "Internal server error."}), 500
 
 
 def _handle_global_exception(error):
-    traceback_str = traceback.format_exc()
-    error_message = f"An error occurred: {str(error)}"
-    message = f"{error_message}\n\n{traceback_str}"
     try:
-        logger_bot.send(message)
+        logger_bot.announce(error, "An error occurred:")
     except Exception as send_error:
         return jsonify("An error occurred, also for send."), 500
     return jsonify("An error occurred"), 500

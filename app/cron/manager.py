@@ -6,30 +6,31 @@ import app.cron.job_connection_analize as job_connection_analize
 import app.cron.job_fetch_new_proxies as job_fetch_new_proxies
 
 
-def start_jobs(context, telegram_api, bot_api):
+def start_jobs(context, telegram_api, bot_api, logger_api):
     scheduler = BackgroundScheduler(
         {'apscheduler.job_defaults.max_instances': 5})
+    job_fetch_new_proxies.start(context, telegram_api, logger_api)
     # job add message to channel
     scheduler.add_job(
-        lambda: job_channel_add_message.start(context, bot_api),
+        lambda: job_channel_add_message.start(context, bot_api, logger_api),
         trigger=CronTrigger.from_crontab('0 */2 * * *')
     )
 
     # job edit last message of channel
     scheduler.add_job(
-        lambda: job_channel_edit_message.start(context, bot_api),
+        lambda: job_channel_edit_message.start(context, bot_api, logger_api),
         trigger=CronTrigger.from_crontab('*/5 * * * *')
     )
 
     # job test connection of proxy base on reports
     scheduler.add_job(
-        lambda: job_connection_analize.start(context),
+        lambda: job_connection_analize.start(context, logger_api),
         trigger=CronTrigger.from_crontab('*/5 * * * *')
     )
 
     # job fetch new proxies from other proxy chaneels
     scheduler.add_job(
-        lambda: job_fetch_new_proxies.start(context, telegram_api),
+        lambda: job_fetch_new_proxies.start(context, telegram_api, logger_api),
         trigger=CronTrigger.from_crontab('*/5 * * * *')
     )
     scheduler.start()

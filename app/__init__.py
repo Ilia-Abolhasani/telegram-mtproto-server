@@ -1,6 +1,5 @@
 import sys
 import logging
-from dotenv import load_dotenv
 from flask import Flask
 from app.cron.manager import start_jobs
 from app.Context import Context
@@ -8,6 +7,7 @@ from app.middleware.request_handler import request_handler_middleware
 from app.route import route_bp
 from app.util.Telegram import Telegram
 from app.util.BotAPI import BotAPI
+from app.util.LoggerBot import LoggerBot
 from app.config.config import Config
 
 
@@ -50,5 +50,6 @@ telegram_api = Telegram(
 )
 telegram_api.remove_all_proxies()
 bot_api = BotAPI()
+logger_api = LoggerBot()
 
-start_jobs(context, telegram_api, bot_api)
+start_jobs(context, telegram_api, bot_api, logger_api)
