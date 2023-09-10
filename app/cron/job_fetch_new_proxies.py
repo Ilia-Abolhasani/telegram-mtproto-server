@@ -20,7 +20,8 @@ def start(context, telegram_api, logger_api):
                         channel.chat_id = chat_id
                     else:
                         raise Exception("private channel without chat_id!")
-
+                if (channel.is_public):
+                    telegram_api.search_public_chat(channel.username)
                 messages, last_message_id = telegram_api.channel_history(
                     int(channel.chat_id), 500, channel.last_id)
                 proxy_linkes = []
