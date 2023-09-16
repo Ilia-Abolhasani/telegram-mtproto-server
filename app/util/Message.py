@@ -30,8 +30,7 @@ def create_message(proxies, connect_num, total, channels_num):
 
     current_date = current_solar_date()
     message += f"<b>وضعیت مجموعه در این لحظه (<i>{current_date}</i>):</b>\n"
-    message += f"🔗 <b>{connect_num}</b> پروکسی قابلیت وصل شدند دارند.\n"
-    message += f"📊 <b>{total}</b> پروکسی منحصر بفرد وجود دارد.\n"
-    message += f"📡 <b>{channels_num}</b> کانال پروکسی دائم در حال بررسی شدند هستند.\n"
+    message += f"📊 <b>{connect_num}</b> پروکسی از <b>{total}</b> پروکسی قابلیت اتصال دارند.\n"
+    message += f"📡 <b>{channels_num}</b> کانال پروکسی دائم در حال بررسی شدن هستند.\n"
     message += "\n🆔 @mtprotoAI"
     return message
