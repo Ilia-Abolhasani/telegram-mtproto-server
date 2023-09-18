@@ -22,7 +22,6 @@ def is_valid_mtproto_link(proxy_link):
 
     if parsed_url.scheme != 'https' or parsed_url.netloc != 't.me' or parsed_url.path != '/proxy':
         return False
-
     query_params = parse_qs(parsed_url.query)
     if len(query_params) != len(required_params):
         return False
@@ -39,11 +38,10 @@ def is_valid_mtproto_link(proxy_link):
 def extract_all_mtproto(message):
     ulrs = []
     json_string = json.dumps(message, indent=4)
-    urls = re.findall(r'"url": "https://t.me/proxy\?([^"]+)"', json_string)
+    urls = re.findall(r'https://t.me/proxy\?[^\s\n"]+', json_string)
     for url in urls:
         decoded_url = re.sub(
             r'%([0-9a-fA-F]{2})', lambda m: chr(int(m.group(1), 16)), url)
-        decoded_url = "https://t.me/proxy?" + decoded_url
         if (is_valid_mtproto_link(decoded_url)):
             ulrs.append(decoded_url)
     return ulrs
