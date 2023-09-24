@@ -16,7 +16,7 @@ def create_star(ping, speed):
 
 
 def create_message(proxies, connect_num, total, channels_num):
-    text = "لیست سریع‌ترین پروکسی‌های انتخاب شده توسط کاوشگر هوش مصنوعی"
+    text = "سریع‌ترین پروکسی‌های انتخاب شده"
     message = f"<b>{text}:</b>\n\n"
 
     for proxy in proxies:
@@ -29,8 +29,10 @@ def create_message(proxies, connect_num, total, channels_num):
         message += proxy_info + "\n"
 
     current_date = current_solar_date()
-    message += f"<b>وضعیت مجموعه در این لحظه (<i>{current_date}</i>):</b>\n"
+    message += f"<b>وضعیت مجموعه:</b>\n"
     message += f"📊 <b>{connect_num}</b> پروکسی از <b>{total}</b> پروکسی قابلیت اتصال دارند.\n"
-    message += f"📡 <b>{channels_num}</b> کانال پروکسی دائم در حال بررسی شدن هستند.\n"
+    message += f"📡 <b>{channels_num}</b> کانال پروکسی دائم در حال بررسی شدن هستند.\n\n"
+    message += f"پست‌ها را با دوستان و عزیزانتان به اشتراک بگذارید. 🙏😍\n"
+    message += f"آپدیت شده در (<i>{current_date}</i>)\n"
     message += "\n🆔 @mtprotoAI"
     return message

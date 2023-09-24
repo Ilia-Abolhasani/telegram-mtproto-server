@@ -22,7 +22,7 @@ class Config:
     # logger
     loggger_bot_api_key = os.getenv("loggger_bot_api_key")
     loggger_bot_chat_id = os.getenv("loggger_bot_chat_id")
-    message_limit_proxy = 7
+    message_limit_proxy = 5
     max_ping_value = 10000
     exponential_decay = 0.9
     contribute_history = 5
