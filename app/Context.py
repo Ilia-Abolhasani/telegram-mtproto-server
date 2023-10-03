@@ -53,7 +53,7 @@ class Context:
                 else:
                     result = query(new_session)
 
-                if new_session.dirty or new_session.new:
+                if new_session.dirty or new_session.new or new_session.deleted:
                     new_session.commit()
                 new_session.close()
                 return result
