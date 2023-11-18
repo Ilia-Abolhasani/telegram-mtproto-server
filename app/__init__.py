@@ -1,13 +1,12 @@
 import sys
 import logging
 from flask import Flask
+from telegram.telegram_api import Telegram_API
 from app.cron.manager import start_jobs
 from app.Context import Context
 from app.middleware.request_handler import request_handler_middleware
 from app.route import route_bp
-from app.util.Telegram import Telegram
 from app.util.BotAPI import BotAPI
-from app.util.LoggerBot import LoggerBot
 from app.config.config import Config
 
 
@@ -41,7 +40,7 @@ app.before_request(request_handler_middleware)
 
 # Initialize
 context = Context()
-telegram_api = Telegram(
+telegram_api = Telegram_API(
     Config.telegram_app_id,
     Config.telegram_app_hash,
     Config.telegram_phone,
@@ -49,7 +48,7 @@ telegram_api = Telegram(
     Config.tdlib_directory
 )
 telegram_api.remove_all_proxies()
-bot_api = BotAPI()
-logger_api = LoggerBot()
+bot_api = BotAPI(Config.bot_api_key, Config.bot_chat_id)
+logger_api = BotAPI(Config.bot_api_key, Config.loggger_bot_chat_id)
 
 start_jobs(context, telegram_api, bot_api, logger_api)

@@ -1,14 +1,26 @@
-import os
+import traceback
 from pytgbot import Bot
-from app.config.config import Config
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
 
 class BotAPI:
-    def __init__(self):
-        self.bot = Bot(Config.bot_api_key)
-        self.chat = Config.bot_chat_id
+    def __init__(self, bot_api_key, bot_chat_id):
+        self.bot = Bot(bot_api_key)
+        self.chat = bot_chat_id
+
+    def send(self, text):
+        result = self.bot.send_message(self.chat, text)
+        return result
+    
+    def announce(self, error, extra_message=None):
+        traceback_str = traceback.format_exc()
+        error_message = str(error)
+        if extra_message:
+            error_message = extra_message + " " + error_message
+        message = f"{error_message}\n\n{traceback_str}"
+        print(message)
+        self.send(message)
 
     def send_message(self, text, parse_mode="HTML"):
         result = self.bot.send_message(self.chat, text, parse_mode)

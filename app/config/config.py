@@ -15,13 +15,12 @@ class Config:
     telegram_phone = os.getenv("telegram_phone")
     database_encryption_key = os.getenv("database_encryption_key")
     tdlib_directory = os.getenv("tdlib_directory")
-    download_timeout = os.getenv("download_timeout")
     # main chanel bot
     bot_api_key = os.getenv("bot_api_key")
     bot_chat_id = os.getenv("bot_chat_id")
     # logger
-    loggger_bot_api_key = os.getenv("loggger_bot_api_key")
     loggger_bot_chat_id = os.getenv("loggger_bot_chat_id")
+
     message_limit_proxy = 5
     max_ping_value = 10000
     exponential_decay = 0.9
