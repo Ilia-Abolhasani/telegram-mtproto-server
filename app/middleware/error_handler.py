@@ -3,7 +3,7 @@ from flask import Flask
 from flask import jsonify
 from app.util.BotAPI import BotAPI
 from app.config.config import Config
-logger_bot = BotAPI(Config.bot_api_key, Config.loggger_bot_chat_id)
+logger_bot = BotAPI(Config.loggger_bot_api_key, Config.loggger_bot_chat_id)
 
 
 def register_error_handlers(app):
