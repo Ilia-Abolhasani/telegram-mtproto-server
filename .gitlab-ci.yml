@@ -9,7 +9,7 @@ deploy_prod:
   stage: prod
   tags: ["telegram"]  
   script:
-    - systemctl stop mtproxyserver.service
+    - sudo systemctl stop mtproxyserver.service
     - rm -rf $BASE_PATH/*
     - mkdir -p $BASE_PATH
     - date > $BASE_PATH/date.txt
@@ -19,7 +19,7 @@ deploy_prod:
     - python -m venv $BASE_PATH/venv
     - source $BASE_PATH/venv/bin/activate
     - pip install -r $BASE_PATH/requirements.txt
-    - systemctl start mtproxyserver.service
-    - systemctl status mtproxyserver.service
+    - sudo systemctl start mtproxyserver.service
+    - sudo systemctl status mtproxyserver.service
   only:
     - main
