@@ -1,0 +1,29 @@
+stages:
+  - prod
+
+variables:
+  SITE: ""
+  PORT: 4001
+  BASE_PATH: "/home/telegram/telegram-mtproto-server"
+
+deploy_prod:
+  stage: prod
+  tags: [$SITE]
+  environment:
+    name: $SITE
+    url: https://$SITE/
+  script:
+    - systemctl stop mtproxyserver.service
+    - rm -rf $BASE_PATH/*
+    - mkdir -p $BASE_PATH
+    - date > $BASE_PATH/date.txt
+    - sudo cp -a ./* $BASE_PATH/
+    - printf "%s" "${env}" > .env
+    - sudo cp .env $BASE_PATH/.env
+    - python -m venv $BASE_PATH/venv
+    - source $BASE_PATH/venv/bin/activate
+    - pip install -r $BASE_PATH/requirements.txt
+    - systemctl start mtproxyserver.service
+    - systemctl status mtproxyserver.service
+  only:
+    - main
