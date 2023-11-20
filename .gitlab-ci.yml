@@ -2,16 +2,11 @@ stages:
   - prod
 
 variables:
-  SITE: ""
   PORT: 4001
   BASE_PATH: "/home/telegram/telegram-mtproto-server"
 
 deploy_prod:
   stage: prod
-  tags: [$SITE]
-  environment:
-    name: $SITE
-    url: https://$SITE/
   script:
     - systemctl stop mtproxyserver.service
     - rm -rf $BASE_PATH/*
