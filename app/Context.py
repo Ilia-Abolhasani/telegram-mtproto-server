@@ -1,4 +1,5 @@
 import os
+import time
 import mysql.connector
 from sqlalchemy import create_engine, text, func, or_
 from sqlalchemy.orm import sessionmaker
@@ -34,43 +35,47 @@ class Context:
         self.engine = create_engine(db_url, isolation_level="AUTOCOMMIT")
         Base.metadata.create_all(self.engine)
 
-    def _session(self):                
-        def on_retry(session, exc):
-            if isinstance(exc, (exc.OperationalError, exc.InternalError)) and "lock wait timeout" in str(exc):
-                time.sleep(Config.session_retry_interval)
-                return True
-            return False
-        Session = sessionmaker(bind=self.engine, retry_on_exception=on_retry, retry_max=Config.session_retry_max)        
+    def _session(self):                        
+        Session = sessionmaker(bind=self.engine)
         return Session()
 
     def _exec(self, query, session=None):
         new_session = None
-        try:
-            if session:
-                if not session.is_active:
-                    session.begin()
-                result = query(session)
-                return result
-            else:
-                new_session = self._session()
-                if not new_session.is_active:
-                    with new_session.begin() as transaction:
-                        result = query(new_session)
+        retry_attempt = 0
+        error = None
+        while retry_attempt < Config.session_retry_max:
+            try:
+                if session:
+                    if not session.is_active:
+                        session.begin()
+                    result = query(session)
+                    return result
                 else:
-                    result = query(new_session)
+                    new_session = self._session()
+                    if not new_session.is_active:
+                        with new_session.begin() as transaction:
+                            result = query(new_session)
+                    else:
+                        result = query(new_session)
 
-                if new_session.dirty or new_session.new or new_session.deleted:
-                    new_session.commit()
-                new_session.close()
-                return result
-
-        except Exception as e:
+                    if new_session.dirty or new_session.new or new_session.deleted:
+                        new_session.commit()
+                    new_session.close()
+                    return result
+            except Exception as e:
+                if "lock wait timeout" in str(e):
+                    time.sleep(Config.session_retry_interval)
+                    retry_attempt += 1
+                    print(f"Retrying... Attempt {retry_attempt}")
+                else:
+                    error = e
+                    break
             print(f"An error occurred: {str(e)}")
             if new_session:
                 new_session.rollback()
                 new_session.close()
-            raise e
-
+            raise error
+        
     # channel
     def get_all_channel(self, session=None):
         return self._exec(

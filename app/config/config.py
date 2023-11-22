@@ -24,8 +24,8 @@ class Config:
     logger_bot_chat_id = os.getenv("logger_bot_chat_id")
 
     # Context parameters
-    session_retry_max = 3
-    session_retry_interval = 5  
+    session_retry_max = 5
+    session_retry_interval = 3
 
     max_report_ping = 30
     max_report_speed = 10
