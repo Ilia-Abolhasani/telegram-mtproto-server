@@ -45,7 +45,8 @@ telegram_api = Telegram_API(
     Config.telegram_app_hash,
     Config.telegram_phone,
     Config.database_encryption_key,
-    Config.tdlib_directory
+    Config.tdlib_directory,
+    Config.tdlib_lib_path
 )
 telegram_api.remove_all_proxies()
 bot_api = BotAPI(Config.bot_api_key, Config.bot_chat_id)

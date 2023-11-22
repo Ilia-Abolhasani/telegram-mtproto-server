@@ -15,6 +15,7 @@ class Config:
     telegram_phone = os.getenv("telegram_phone")
     database_encryption_key = os.getenv("database_encryption_key")
     tdlib_directory = os.getenv("tdlib_directory")
+    tdlib_lib_path = os.getenv("tdlib_lib_path")
     # main chanel bot
     bot_api_key = os.getenv("bot_api_key")
     bot_chat_id = os.getenv("bot_chat_id")
