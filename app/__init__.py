@@ -49,6 +49,6 @@ telegram_api = Telegram_API(
 )
 telegram_api.remove_all_proxies()
 bot_api = BotAPI(Config.bot_api_key, Config.bot_chat_id)
-logger_api = BotAPI(Config.loggger_bot_api_key, Config.loggger_bot_chat_id)
+logger_api = BotAPI(Config.logger_bot_api_key, Config.logger_bot_chat_id)
 
 start_jobs(context, telegram_api, bot_api, logger_api)

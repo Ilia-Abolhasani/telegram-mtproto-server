@@ -19,8 +19,8 @@ class Config:
     bot_api_key = os.getenv("bot_api_key")
     bot_chat_id = os.getenv("bot_chat_id")
     # logger
-    loggger_bot_api_key = os.getenv("loggger_bot_api_key")
-    loggger_bot_chat_id = os.getenv("loggger_bot_chat_id")
+    logger_bot_api_key = os.getenv("logger_bot_api_key")
+    logger_bot_chat_id = os.getenv("logger_bot_chat_id")
 
     message_limit_proxy = 5
     max_ping_value = 10000
