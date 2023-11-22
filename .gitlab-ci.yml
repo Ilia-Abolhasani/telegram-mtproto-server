@@ -19,7 +19,7 @@ deploy_prod:
     - sudo apt-get install -y python3-venv 
     - sudo python3 -m venv $BASE_PATH/venv
     - source $BASE_PATH/venv/bin/activate
-    - sudo pip install -r $BASE_PATH/requirements.txt
+    - pip install -r $BASE_PATH/requirements.txt
     - sudo systemctl start mtproxyserver.service
     - sudo systemctl status mtproxyserver.service
   only:
