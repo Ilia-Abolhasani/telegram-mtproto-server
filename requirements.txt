@@ -7,4 +7,5 @@ Flask==2.3.2
 apscheduler==3.10.3
 pandas==1.5.3
 convertdate==2.4.0
+tqdm==4.65.0
 git+https://github.com/Ilia-Abolhasani/python-telegram
