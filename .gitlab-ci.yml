@@ -12,9 +12,9 @@ deploy_prod:
     - sudo systemctl stop mtproxyserver.service
     - sudo rm -rf $BASE_PATH/*
     - mkdir -p $BASE_PATH
-    - date > $BASE_PATH/date.txt
+    - sudo date > $BASE_PATH/date.txt
     - sudo cp -a ./* $BASE_PATH/
-    - printf "%s" "${env}" > .env
+    - sudo printf "%s" "${env}" > .env
     - sudo cp .env $BASE_PATH/.env
     - python -m venv $BASE_PATH/venv
     - source $BASE_PATH/venv/bin/activate
