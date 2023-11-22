@@ -23,6 +23,16 @@ class Config:
     logger_bot_api_key = os.getenv("logger_bot_api_key")
     logger_bot_chat_id = os.getenv("logger_bot_chat_id")
 
+    # Context parameters
+    session_retry_max = 3
+    session_retry_interval = 5  
+
+    max_report_ping = 30
+    max_report_speed = 10
+    max_timeouts = 5
+    successful_pings = 5
+    
+    # proxie selection parameters
     message_limit_proxy = 5
     max_ping_value = 10000
     exponential_decay = 0.9

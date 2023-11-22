@@ -3,6 +3,7 @@ import mysql.connector
 from sqlalchemy import create_engine, text, func, or_
 from sqlalchemy.orm import sessionmaker
 from app.util.DotDict import DotDict
+from app.config.config import Config
 
 # models
 from app.model.base import Base
@@ -19,22 +20,27 @@ from collections.abc import Iterable
 class Context:
     def __init__(self):
         # config
-        self.max_report_ping = 30
-        self.max_report_speed = 10
-        self.max_timeouts = 5
-        self.successful_pings = 5
+        self.max_report_ping = Config.max_report_ping
+        self.max_report_speed = Config.max_report_speed
+        self.max_timeouts = Config.max_timeouts
+        self.successful_pings = Config.successful_pings
         #
-        db_name = os.getenv("database_name")
-        db_user = os.getenv("database_user")
-        db_pass = os.getenv("database_pass")
-        db_host = os.getenv("database_host")
-        db_port = os.getenv("database_port")
+        db_name = Config.database_name
+        db_user = Config.database_user 
+        db_pass = Config.database_pass
+        db_host = Config.database_host
+        db_port = Config.database_port
         db_url = f"mysql+mysqlconnector://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
         self.engine = create_engine(db_url, isolation_level="AUTOCOMMIT")
         Base.metadata.create_all(self.engine)
 
-    def _session(self):
-        Session = sessionmaker(bind=self.engine,)
+    def _session(self):                
+        def on_retry(session, exc):
+            if isinstance(exc, (exc.OperationalError, exc.InternalError)) and "lock wait timeout" in str(exc):
+                time.sleep(Config.session_retry_interval)
+                return True
+            return False
+        Session = sessionmaker(bind=self.engine, retry_on_exception=on_retry, retry_max=Config.session_retry_max)        
         return Session()
 
     def _exec(self, query, session=None):
