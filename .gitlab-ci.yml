@@ -16,7 +16,7 @@ deploy_prod:
     - sudo cp -a ./* $BASE_PATH/
     - sudo printf "%s" "${env}" > .env
     - sudo cp .env $BASE_PATH/.env
-    - python -m venv $BASE_PATH/venv
+    - python3 -m venv $BASE_PATH/venv
     - source $BASE_PATH/venv/bin/activate
     - pip install -r $BASE_PATH/requirements.txt
     - sudo systemctl start mtproxyserver.service
