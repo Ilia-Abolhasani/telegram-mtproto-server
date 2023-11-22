@@ -12,7 +12,7 @@ deploy_prod:
     - sudo systemctl stop mtproxyserver.service
     - sudo rm -rf $BASE_PATH/*
     - mkdir -p $BASE_PATH
-    - date > sudo $BASE_PATH/date.txt
+    - sudo bash -c "date > $BASE_PATH/date.txt"
     - sudo cp -a ./* $BASE_PATH/
     - sudo printf "%s" "${env}" > .env
     - sudo cp .env $BASE_PATH/.env
