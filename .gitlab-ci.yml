@@ -10,7 +10,7 @@ deploy_prod:
   tags: ["telegram"]  
   script:
     - sudo systemctl stop mtproxyserver.service
-    - rm -rf $BASE_PATH/*
+    - sudo rm -rf $BASE_PATH/*
     - mkdir -p $BASE_PATH
     - date > $BASE_PATH/date.txt
     - sudo cp -a ./* $BASE_PATH/
