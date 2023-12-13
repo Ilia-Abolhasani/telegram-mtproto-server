@@ -1,1 +1,1 @@
-# telegram-mtproto
+# telegram-mtproto-server
